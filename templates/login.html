@@ -42,6 +42,7 @@
       <!-- Standard HTML form — POST to /login with form encoding.
            The next field prevents open redirect (validated server-side). -->
       <form method="POST" action="/login" autocomplete="on">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="hidden" name="next" value="{{ next | e }}">
         <div class="form-group">
           <label class="form-label" for="username">Username</label>

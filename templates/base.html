@@ -20,6 +20,10 @@
             href="{{ url_for('static', filename='css/config.css') }}"
         />
         <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/responsive.css') }}"
+        />
+        <link
             rel="icon"
             href="{{ url_for('static', filename='unbound.svg')}}"
             type="image/svg+xml"
@@ -35,6 +39,14 @@
                 />
             </a>
             <span class="topbar-title">UNBOUND <span>DNS</span></span>
+            <button type="button" class="btn btn-ghost nav-toggle" id="nav-toggle"
+                aria-controls="primary-navigation" aria-expanded="false" hidden>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+                    stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M3 6h18M3 12h18M3 18h18" />
+                </svg>
+                Menu
+            </button>
             <div class="topbar-sep"></div>
             <span class="topbar-hostname"
                 >HOST: <b id="tb-hostname">loading&#8230;</b></span
@@ -49,7 +61,7 @@
         </div>
 
         <div class="layout">
-            <nav class="sidebar">
+            <nav class="sidebar" id="primary-navigation" aria-label="Primary navigation">
                 <div class="sidebar-section">Navigation</div>
                 <a
                     href="/"
@@ -87,6 +99,10 @@
                         <polyline points="10 9 9 9 8 9" />
                     </svg>
                     Config
+                </a>
+                <a href="/filters" class="sidebar-item {% if active_tab=='filters' %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16l-6 7v7l-4 2v-9z" /></svg>
+                    Filters
                 </a>
                 <a
                     href="/debug"
@@ -170,6 +186,41 @@
         </div>
 
         <div id="toast-container"></div>
+
+        <script id="responsive-navigation">
+            (() => {
+                const button = document.getElementById('nav-toggle');
+                const nav = document.getElementById('primary-navigation');
+                const layout = document.querySelector('.layout');
+                const compact = window.matchMedia('(max-width: 900px)');
+                const setOpen = (open, returnFocus = false) => {
+                    layout.classList.toggle('nav-open', open);
+                    button.setAttribute('aria-expanded', String(open));
+                    if (returnFocus) button.focus();
+                };
+                button.hidden = false;
+                layout.classList.add('nav-ready');
+                button.addEventListener('click', () => {
+                    const open = button.getAttribute('aria-expanded') !== 'true';
+                    setOpen(open);
+                    if (open) nav.querySelector('a')?.focus();
+                });
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && compact.matches &&
+                        button.getAttribute('aria-expanded') === 'true') {
+                        setOpen(false, true);
+                    }
+                });
+                nav.addEventListener('click', (event) => {
+                    if (compact.matches && event.target.closest('a')) setOpen(false);
+                });
+                compact.addEventListener('change', () => {
+                    const navHadFocus = nav.contains(document.activeElement);
+                    setOpen(false, compact.matches && navHadFocus);
+                });
+                nav.querySelector('.sidebar-item.active')?.setAttribute('aria-current', 'page');
+            })();
+        </script>
 
         <script>
             const _csrfToken =

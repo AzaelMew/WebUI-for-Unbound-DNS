@@ -2,7 +2,7 @@
 {% block content %}
 
 <script>
-var FILE_META      = {{ file_meta_json | safe }};
+var FILE_META      = {{ file_meta | tojson }};
 var IS_MAIN        = {{ 'true' if is_main_config else 'false' }};
 var ALLOWED_TABS   = FILE_META.allowed_tabs || [];
 var ALL_TABS       = {{ all_tabs_json | safe }};
@@ -27,6 +27,8 @@ var TAB_LABELS     = {{ tab_labels_json | safe }};
     </button>
   </div>
 </div>
+
+<div class="card" style="padding:16px;margin-bottom:16px;border-color:var(--accent);">Existing Debian configuration is preserved. Form-based saves and include rewriting are disabled because upstream discards settings. Choose a file, then use <strong>Raw Editor</strong>; saves are validated and backed up. Reload Unbound from Settings to activate.</div>
 
 <!-- ACTIVE CONFIG FILE CARD -->
 <div class="card cfg-file-card">
@@ -531,6 +533,7 @@ function wireToggles(root) {
   });
 }
 wireToggles();
+document.querySelectorAll('[onclick="saveConfig()"], [onclick="applyConfig()"], [onclick="saveIncludes()"]').forEach(function(button){button.disabled=true;button.title='Use the validated Raw Editor to preserve existing settings';});
 
 // ── TAB LOCKING ───────────────────────────────────────────────────────────────
 function applyTabLocking() {

@@ -1,0 +1,305 @@
+/* Layout-only overrides. Keep the existing palette, typography and card style. */
+.layout {
+    min-width: 0;
+}
+
+.main {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    overflow-x: visible;
+}
+
+.topbar {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    padding-block: 6px;
+}
+
+.topbar-title {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.topbar-hostname {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.topbar-right {
+    flex-shrink: 0;
+}
+
+/* Zero the intrinsic minimums: long paths/stats must not widen grid tracks. */
+.main > *,
+.grid-2 > *,
+.grid-3 > *,
+.grid-4 > *,
+.form-row > *,
+.fwd-zone-row > *,
+.card-header > *,
+.card-body > *,
+.main > div[style*="grid-template-columns"] > * {
+    min-width: 0;
+}
+
+.main {
+    overflow-wrap: anywhere;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.page-header,
+.card-header,
+.btn-group,
+.flex,
+.modal-actions,
+.apply-bar {
+    flex-wrap: wrap;
+}
+
+.card-header h3 {
+    flex-basis: 160px;
+}
+
+.card-header > .btn,
+.card-header > .badge {
+    margin-left: auto;
+}
+
+.btn {
+    max-width: 100%;
+    white-space: normal;
+    justify-content: center;
+}
+
+.btn svg,
+.alert > svg {
+    flex-shrink: 0;
+}
+
+.form-control,
+.code-area,
+.input-group {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.form-row,
+.fwd-zone-row {
+    grid-template-columns: 240px minmax(0, 1fr);
+}
+
+.tab-nav {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.tab-btn {
+    min-height: 44px;
+}
+
+.info-table {
+    table-layout: fixed;
+}
+
+.info-table td {
+    overflow-wrap: anywhere;
+    white-space: normal !important;
+}
+
+.info-table td:first-child,
+.info-table td:last-child {
+    white-space: normal;
+}
+
+/* File actions use an inline width:1%: give them a real column to wrap in. */
+.info-table td[style*="width:1%"] {
+    width: 40% !important;
+}
+
+.main > div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.card-body > div[style*="display:flex"],
+.card-body > div[style*="display: flex"] {
+    flex-wrap: wrap;
+}
+
+.modal-box {
+    max-height: calc(100dvh - 32px);
+}
+
+#toast-container {
+    max-width: calc(100% - 40px);
+}
+
+.toast {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.sidebar {
+    overflow-wrap: anywhere;
+}
+
+#uiprefs-tab-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.nav-toggle {
+    display: none;
+    min-height: 44px;
+    flex-shrink: 0;
+}
+
+.nav-toggle:focus-visible,
+.sidebar-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+}
+
+@media (max-width: 1100px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-2,
+    .main > div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fwd-zone-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        display: flex;
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 12px;
+    }
+
+    .sidebar-item {
+        min-height: 44px;
+    }
+
+    .layout.nav-ready:not(.nav-open) .sidebar {
+        display: none;
+    }
+
+    .nav-toggle:not([hidden]) {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 700px) {
+    .main {
+        padding: 14px 12px;
+    }
+
+    .topbar {
+        padding-inline: 12px;
+        gap: 6px;
+    }
+
+    .topbar-sep,
+    .topbar-clock {
+        display: none;
+    }
+
+    .topbar-title {
+        font-size: 20px;
+        letter-spacing: 1px;
+    }
+
+    .topbar-hostname {
+        order: 1;
+        flex: 1 1 100%;
+    }
+
+    .topbar-right {
+        gap: 6px;
+    }
+
+    .form-row,
+    .grid-3 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ac-entry,
+    .lz-entry,
+    .ld-entry {
+        margin-left: 0;
+        flex-wrap: wrap;
+    }
+
+    .include-row {
+        flex-wrap: wrap;
+    }
+
+    /* Existing checkbox picker grids have inline styles, not classes. */
+    #uiprefs-tab-grid,
+    .modal-box div[style*="grid-template-columns:repeat(3,1fr)"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .info-table td {
+        padding: 7px 6px;
+    }
+
+    .info-table td:first-child {
+        padding-right: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-4 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .page-header-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Filter subscriptions keep URLs and actions within their card. */
+#filter-page .filter-url,
+#filter-page .filter-subscription { overflow-wrap: anywhere; min-width: 0; }
+#filter-page .filter-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#filter-page button { min-height: 44px; }
+#filter-page input:focus-visible,
+#filter-page textarea:focus-visible,
+#filter-page button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-toggle {
+        transition: none;
+    }
+}

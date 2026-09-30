@@ -1,0 +1,3 @@
+# Container-specific integration fixtures; never use these as production configuration.
+**/probe_tif_*.py
+**/verify_filter_routes.py

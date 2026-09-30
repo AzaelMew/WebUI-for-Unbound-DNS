@@ -235,9 +235,10 @@
               style="width:{{ sys.mem_pct }}%"></div>
           </div>
           <div class="text-xs text-muted text-mono" style="margin-top:4px;">
-            Used {{ "%.1f"|format(sys.mem_used/1073741824) }} GB
-            / Total {{ "%.1f"|format(sys.mem_total/1073741824) }} GB
-            · Available {{ "%.1f"|format(sys.mem_avail/1073741824) }} GB
+            Used {{ "%.0f"|format(sys.mem_used/1048576) }} MiB
+            / Total {{ "%.0f"|format(sys.mem_total/1048576) }} MiB
+            · Available {{ "%.0f"|format(sys.mem_avail/1048576) }} MiB
+            <span class="text-muted">({{ sys.mem_source|default('proc meminfo') }})</span>
           </div>
         </div>
         {% endif %}
