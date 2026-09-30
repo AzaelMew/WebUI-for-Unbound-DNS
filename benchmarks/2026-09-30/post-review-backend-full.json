@@ -1,0 +1,601 @@
+{
+  "timestamp_utc": "2026-09-30T22:53:54.794305+00:00",
+  "source": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt",
+    "bytes": 48926475,
+    "sha256": "b8b539f0e1927ce42beb3c77566c628cb84dcb58c850c4a1aff4f73f2b0242bc",
+    "feed_headers": [
+      "[Adblock Plus]",
+      "! Title: HaGeZi's Threat Intelligence Feeds - a serious security boost (recommended)",
+      "! Description: This blocklist targets malware, cryptojacking, scams, spam, and phishing. It blocks domains known for spreading malware, running phishing attacks, and hosting command-and-control servers.",
+      "! Warning: This list is huge and can eat up a lot of memory depending on your ad blocker. If that's an issue, grab the medium or mini version instead. It's too big for the iOS AdGuard mobile app, and AdGuard Home needs at least 2 GB RAM. The RPZ version had to be split into two files because of its size, you need both.",
+      "! Homepage: https://github.com/hagezi/dns-blocklists",
+      "! License: https://github.com/hagezi/dns-blocklists/blob/main/LICENSE",
+      "! Issues: https://github.com/hagezi/dns-blocklists/issues",
+      "! Disclaimer: https://github.com/hagezi/dns-blocklists/blob/main/README.md#disclaimer",
+      "! Expires: 8 hours",
+      "! Last modified: 30 Sep 2026 14:31 UTC",
+      "! Version: 2026.0930.1431.55",
+      "! Syntax: AdBlock",
+      "! Number of entries: 2389473",
+      "!"
+    ]
+  },
+  "events": [
+    {
+      "operation": "compile_union",
+      "phase": "initialize",
+      "seconds": 0.00878460193052888,
+      "python_self_peak_rss_mib": 46.19140625
+    },
+    {
+      "peak_rss_mib": 8.11328125,
+      "minimum_headroom_mib": 1757.30859375,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "initialize",
+      "path": "app/.filter-validate-edz1ie5n/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.01822562504094094,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 4.90234375,
+      "minimum_headroom_mib": 1757.4873046875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "initialize",
+      "path": "app/.filter-validate-edz1ie5n/unbound/unbound.conf.d/webui-filters.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.017373665003105998,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "backup_transaction",
+      "phase": "initialize",
+      "seconds": 0.004691131063736975,
+      "python_self_peak_rss_mib": 46.41015625
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "initialize",
+      "seconds": 0.002359112026169896,
+      "python_self_peak_rss_mib": 46.41015625
+    },
+    {
+      "peak_rss_mib": 4.46484375,
+      "minimum_headroom_mib": 1757.763671875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "initialize",
+      "path": "unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.01756964495871216,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "cached_download_copy",
+      "phase": "disabled-refresh",
+      "seconds": 0.02687034709379077,
+      "python_self_peak_rss_mib": 46.41015625
+    },
+    {
+      "operation": "parse_build_sqlite",
+      "phase": "disabled-refresh",
+      "seconds": 57.901086997939274,
+      "python_self_peak_rss_mib": 48.37890625
+    },
+    {
+      "operation": "compile_union",
+      "phase": "disabled-refresh",
+      "seconds": 7.802156671998091,
+      "python_self_peak_rss_mib": 50.859375
+    },
+    {
+      "operation": "compile_union",
+      "phase": "enable",
+      "seconds": 11.496036762953736,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 999.984375,
+      "minimum_headroom_mib": 762.146484375,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "enable",
+      "path": "app/.filter-validate-u8g8pgdj/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 8.162233878974803,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 1000.171875,
+      "minimum_headroom_mib": 762.1591796875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "enable",
+      "path": "app/.filter-validate-u8g8pgdj/unbound/unbound.conf.d/webui-filters.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 8.574419387965463,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "backup_transaction",
+      "phase": "enable",
+      "seconds": 23.387188905966468,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "enable",
+      "seconds": 0.43690158403478563,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 1000.16015625,
+      "minimum_headroom_mib": 762.0224609375,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "enable",
+      "path": "unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 8.160022813011892,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 496.14453125,
+      "minimum_headroom_mib": 1267.5947265625,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "servicecap-comparison",
+      "path": "unbound/unbound.conf",
+      "as_limit_mib": 512,
+      "seconds": 2.8907965610269457,
+      "returncode": 1,
+      "stderr": "[1790808965] unbound-checkconf[18678:0] error: out of memory\n[1790808965] unbound-checkconf[18678:0] error: could not enter zone perpcertified.xyz. always_nxdomain\n[1790808965] unbound-checkconf[18678:0] fatal error: failed local-zone, local-data configuration\n"
+    },
+    {
+      "operation": "backup_transaction",
+      "phase": "backup-current-fragment",
+      "seconds": 26.97128644294571,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "operation": "backup_transaction",
+      "phase": "backup-current-fragment",
+      "seconds": 24.18945874797646,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 1.91015625,
+      "minimum_headroom_mib": 1758.5224609375,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-txwwmlz7/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.019190229009836912,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 4.21484375,
+      "minimum_headroom_mib": 1757.1357421875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-txwwmlz7/unbound/unbound.conf.d/webui-filters.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.0174807800212875,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "rollback-fixture",
+      "seconds": 0.0025246429722756147,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 4.703125,
+      "minimum_headroom_mib": 1757.185546875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.01757276093121618,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 4.890625,
+      "minimum_headroom_mib": 1757.123046875,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-dk_4a3f9/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.017197799985297024,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 3.52734375,
+      "minimum_headroom_mib": 1757.548828125,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-dk_4a3f9/unbound/unbound.conf.d/webui-filters.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.01724270498380065,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "rollback-fixture",
+      "seconds": 0.002434403053484857,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 2.37890625,
+      "minimum_headroom_mib": 1758.3994140625,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.017873103031888604,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 4.71484375,
+      "minimum_headroom_mib": 1757.0625,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-0_utgmkx/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.01840306108351797,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "peak_rss_mib": 6.41015625,
+      "minimum_headroom_mib": 1756.7412109375,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/app/.filter-validate-0_utgmkx/unbound/unbound.conf.d/webui-filters.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.017034869990311563,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "rollback-fixture",
+      "seconds": 0.002252983977086842,
+      "python_self_peak_rss_mib": 50.92578125
+    },
+    {
+      "peak_rss_mib": 4.02734375,
+      "minimum_headroom_mib": 1757.142578125,
+      "guard_error": null,
+      "operation": "checkconf",
+      "phase": "rollback-fixture",
+      "path": "rollback-fixture/unbound/unbound.conf",
+      "as_limit_mib": 1280.0,
+      "seconds": 0.017283610999584198,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "operation": "atomic_copy",
+      "phase": "rollback-fixture",
+      "seconds": 0.002671065041795373,
+      "python_self_peak_rss_mib": 50.92578125
+    }
+  ],
+  "owned_pids": [
+    18663,
+    18665,
+    18667,
+    18669,
+    18671,
+    18673,
+    18676,
+    18678,
+    18680,
+    18682,
+    18684,
+    18686,
+    18688,
+    18690,
+    18692,
+    18694,
+    18696,
+    18698,
+    18700,
+    18702,
+    18704
+  ],
+  "activation_verifications": [
+    {
+      "token": "60e91ce7dffd59c132952395e66d5fff0c9b7254e7f129cb7910db1bd7b7a825",
+      "blocked": "0-0-0-0-0-0-0-0-0-0-0-0-0-0-0.top",
+      "verified_before_state_commit": true
+    }
+  ],
+  "affinity": [
+    21
+  ],
+  "production_before": [
+    {
+      "pid": 5338,
+      "start_ticks": 70036930,
+      "cmdline": "/usr/sbin/unbound -d -p "
+    }
+  ],
+  "environment_before": {
+    "unbound_version": "Version 1.17.1\n\nConfigure line: --build=x86_64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/x86_64-linux-gnu --runstatedir=/run --disable-maintainer-mode --disable-dependency-tracking --with-pythonmodule --with-pyunbound --enable-subnet --enable-dnstap --enable-systemd --with-libnghttp2 --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --disable-rpath --with-pidfile=/run/unbound.pid --with-libevent --enable-tfo-client --with-rootkey-file=/usr/share/dns/root.key --enable-tfo-server\nLinked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 3.0.20 7 Apr 2026\nLinked modules: dns64 python subnetcache respip validator iterator\nTCP Fastopen feature available\n\nBSD licensed, see LICENSE in source package for details.\nReport bugs to unbound-bugs@nlnetlabs.nl or https://github.com/NLnetLabs/unbound/issues\n",
+    "memory_total_mib": 2048.0,
+    "memory_available_mib": 1760.103515625,
+    "swap_total_mib": 512.0,
+    "swap_used_mib": 62.6796875,
+    "production_ps": "    PID                  STARTED COMMAND\n   5338 Wed Sep 30 18:25:11 2026 /usr/sbin/unbound -d -p\n",
+    "disk_free_mib": 1451.8828125
+  },
+  "source_code_sha256": {
+    "filters.py": "ad3bd7e6713eb3ebcc8374a2bcaed8de086bfd11256f3b3837ef4e56b581969e",
+    "filter_store.py": "545c793acd098f21bcf22f297ec401979fde617725d8f0004e6a4c1696fba212",
+    "safety.py": "1631c45aa5a25312fdc2609643d6c60e063c5e4264d6398a63fd8d6a4c1bda5d",
+    "filter_benchmark.py": "d20ba83b716af300f93f43be8165c0a93100c6cea023da351afd9abdd2111b19",
+    "filter_resources.py": "b50069957004aa98844ede322812a74dd715346c1147b1e1169a672cb63516ac",
+    "container_memory.py": "2fd01ccc0d7c56d50979cd01b70629abd521796e70a7e8d690888e3e40c05449"
+  },
+  "method": "Actual FilterManager; cached Path downloader; sequential real staged main/fragment/live checks; test callback cold-starts isolated Unbound and verifies DNS",
+  "limits": {
+    "python_worker_as_mib": 512,
+    "validation_as_mib": "backend preflight-selected, <=1280",
+    "resolver_as_mib": 1024,
+    "servicecap_comparison_as_mib": 512,
+    "minimum_memory_headroom_mib": 384,
+    "minimum_disk_headroom_mib": 384
+  },
+  "baseline": {
+    "startup_s": 0.1302547079976648,
+    "startup_peak_rss_mib": 16.0703125,
+    "steady_rss_mib": 16.0703125,
+    "port": 44013,
+    "pid": 18663,
+    "as_limit_mib": 1024,
+    "queries": {
+      "unfiltered": {
+        "count": 10,
+        "errors": 0,
+        "median_ms": 0.1412395,
+        "p95_ms": 0.165902,
+        "max_ms": 0.165902,
+        "upstream_queries": 10,
+        "failures": []
+      }
+    },
+    "peak_rss_mib": 16.0703125,
+    "minimum_headroom_mib": 1752.2509765625,
+    "guard_error": null
+  },
+  "disabled_refresh_s": 65.74550211010501,
+  "cache": {
+    "count": 2389473,
+    "downloaded_bytes": 48926475,
+    "unsupported": 0,
+    "sqlite_bytes": 56635392,
+    "allocated_bytes": 56635392,
+    "domain_sha256": "10ad0151b5f1a7c801e73f99507e506d55fc2d530412dc4e2d048e8202382882"
+  },
+  "service_preflight_512_remaining": {
+    "accepted": false,
+    "error": "Insufficient filter validation memory headroom: conservative requirement 1,108 MiB, available validator budget 512 MiB. Existing rules are retained. Review container/service memory limits; do not enable a huge feed solely because its import succeeds.",
+    "validator_children_launched": 0,
+    "caveat": "Injected remaining service budget of 512 MiB, an optimistic bound; actual service available memory is lower. No production/cgroup change."
+  },
+  "servicecap_512_as_check": {
+    "returncode": 1,
+    "stderr": "[1790808965] unbound-checkconf[18678:0] error: out of memory\n[1790808965] unbound-checkconf[18678:0] error: could not enter zone perpcertified.xyz. always_nxdomain\n[1790808965] unbound-checkconf[18678:0] fatal error: failed local-zone, local-data configuration\n",
+    "caveat": "RLIMIT_AS comparison, NOT actual systemd 512 MiB MemoryMax cgroup test"
+  },
+  "resolver": {
+    "startup_s": 6.838185032014735,
+    "startup_peak_rss_mib": 1003.35546875,
+    "steady_rss_mib": 1003.35546875,
+    "port": 44013,
+    "pid": 18680,
+    "as_limit_mib": 1024,
+    "queries": {
+      "unfiltered": {
+        "count": 10,
+        "errors": 0,
+        "median_ms": 0.1510195,
+        "p95_ms": 0.35351,
+        "max_ms": 0.35351,
+        "upstream_queries": 10,
+        "failures": []
+      },
+      "blocked": {
+        "count": 20,
+        "errors": 0,
+        "median_ms": 0.035763,
+        "p95_ms": 0.042276,
+        "max_ms": 0.053212,
+        "upstream_queries": 0,
+        "failures": []
+      },
+      "descendant": {
+        "count": 1,
+        "errors": 0,
+        "median_ms": 0.034678,
+        "p95_ms": 0.034678,
+        "max_ms": 0.034678,
+        "upstream_queries": 0,
+        "failures": []
+      }
+    },
+    "peak_rss_mib": 1003.35546875,
+    "minimum_headroom_mib": 762.060546875,
+    "guard_error": null
+  },
+  "enable_total_s": 70.32984305894934,
+  "enable_total_includes_diagnostic_checks": true,
+  "enable_diagnostic_check_s": 2.8907965610269457,
+  "enable_excluding_diagnostic_check_s": 67.43904649792239,
+  "backend_python_self_peak_rss_mib": 50.92578125,
+  "rendered": {
+    "domains": 2389473,
+    "bytes": 125388923,
+    "sha256": "b85f49485e106a4e2442b40f1b395ec46c0697bc26391e8a09f48e94d3f15368",
+    "canonical_sha256": "b85f49485e106a4e2442b40f1b395ec46c0697bc26391e8a09f48e94d3f15368"
+  },
+  "canonical_match": true,
+  "snapshot": {
+    "bytes": 893,
+    "mean_snapshot_serialize_s": 4.326832015067339e-05,
+    "state_json_bytes": 638,
+    "effective_count": 2389473,
+    "subscription_domain_arrays": 0
+  },
+  "backup": {
+    "seconds": 26.971296772011556,
+    "repeated_seconds": 24.19014513201546,
+    "archive_bytes": 1159,
+    "blob_bytes": 13168484,
+    "same_inode_as_managed": false,
+    "same_blob_reused": true,
+    "compression": "gzip",
+    "additional_data_bytes": 13168640,
+    "repeated_blob_allocated_delta_bytes": 0,
+    "repeated_backup_allocated_delta_bytes": 4096
+  },
+  "disk": {
+    "allocated_unique_bytes": 195231744,
+    "files": [
+      {
+        "path": "app/filter-backups/blobs/b85f49485e106a4e2442b40f1b395ec46c0697bc26391e8a09f48e94d3f15368.conf.gz",
+        "bytes": 13168484,
+        "allocated_unique_bytes": 13168640,
+        "links": 1
+      },
+      {
+        "path": "app/filter-backups/blobs/c70fd61b067aa3e19640c7c628fd22b1c37c5742a479588665767a38d77de9f1.conf.gz",
+        "bytes": 82,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "app/filter-backups/filters_1790808835134058731_02b0f60aa6474bfdb7814760fb0ac390.tgz",
+        "bytes": 719,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "app/filter-backups/filters_1790808954446853360_12f32ce87689476ba1917ac08a77bd57.tgz",
+        "bytes": 1139,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "app/filter-backups/filters_1790809003635852148_135ebd5b83f5433180718954ada43e3b.tgz",
+        "bytes": 1159,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "app/filter-backups/filters_1790809027826310353_6046df53412b43b481d79a01c9255476.tgz",
+        "bytes": 1159,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "app/filter-data/cache/64ccc4f50a45460bab83feef97f4e105.sqlite",
+        "bytes": 56635392,
+        "allocated_unique_bytes": 56635392,
+        "links": 1
+      },
+      {
+        "path": "app/filter-data/state.json",
+        "bytes": 638,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "baseline.log",
+        "bytes": 141,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "final.log",
+        "bytes": 141,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "unbound/unbound.conf",
+        "bytes": 817,
+        "allocated_unique_bytes": 4096,
+        "links": 1
+      },
+      {
+        "path": "unbound/unbound.conf.d/webui-filters.conf",
+        "bytes": 125388923,
+        "allocated_unique_bytes": 125390848,
+        "links": 1
+      }
+    ]
+  },
+  "rollback": {
+    "policy_bytes_restored": true,
+    "state_bytes_restored": true,
+    "canary_verified": true,
+    "scope": "small independent actual DNS fixture, not Full hot refresh"
+  },
+  "worker_python_self_peak_rss_mib": 50.92578125,
+  "temporary_tree_removed": true,
+  "production_after": [
+    {
+      "pid": 5338,
+      "start_ticks": 70036930,
+      "cmdline": "/usr/sbin/unbound -d -p "
+    }
+  ],
+  "production_unchanged": true,
+  "environment_after": {
+    "unbound_version": "Version 1.17.1\n\nConfigure line: --build=x86_64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/x86_64-linux-gnu --runstatedir=/run --disable-maintainer-mode --disable-dependency-tracking --with-pythonmodule --with-pyunbound --enable-subnet --enable-dnstap --enable-systemd --with-libnghttp2 --with-chroot-dir= --with-dnstap-socket-path=/run/dnstap.sock --disable-rpath --with-pidfile=/run/unbound.pid --with-libevent --enable-tfo-client --with-rootkey-file=/usr/share/dns/root.key --enable-tfo-server\nLinked libs: libevent 2.1.12-stable (it uses epoll), OpenSSL 3.0.20 7 Apr 2026\nLinked modules: dns64 python subnetcache respip validator iterator\nTCP Fastopen feature available\n\nBSD licensed, see LICENSE in source package for details.\nReport bugs to unbound-bugs@nlnetlabs.nl or https://github.com/NLnetLabs/unbound/issues\n",
+    "memory_total_mib": 2048.0,
+    "memory_available_mib": 1759.251953125,
+    "swap_total_mib": 512.0,
+    "swap_used_mib": 62.6796875,
+    "production_ps": "    PID                  STARTED COMMAND\n   5338 Wed Sep 30 18:25:11 2026 /usr/sbin/unbound -d -p\n",
+    "disk_free_mib": 1451.8671875
+  },
+  "total_s": 193.70247438002843,
+  "not_measured": [
+    "Production hot refresh/full resolver concurrent with checker: unsafe on 2 GiB LXC",
+    "Actual systemd 512 MiB service cgroup; RLIMIT_AS is not MemoryMax",
+    "External-network download/recursion latency; cached copies and deterministic loopback DNS only"
+  ],
+  "launcher_monitor": {
+    "python_sampled_peak_rss_mib": 50.92578125,
+    "minimum_headroom_mib": 762.1357421875,
+    "guard_error": null
+  },
+  "launcher_python_self_peak_rss_mib": 28.15625
+}

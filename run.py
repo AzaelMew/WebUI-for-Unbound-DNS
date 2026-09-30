@@ -20,11 +20,13 @@ import app as upstream
 from safety import install
 from container_memory import install as install_container_memory
 from filters import install as install_filters
+from filter_refresh import install as install_filter_refresh
 from ssl_utils import ensure_ssl_cert
 import uvicorn
 install(upstream)
 install_container_memory(upstream)
 filter_manager = install_filters(upstream)
+filter_refresh_worker = install_filter_refresh(upstream.app, filter_manager)
 cert, key = ensure_ssl_cert()
 if __name__ == '__main__':
     if os.environ.get('WEBUI_HTTP_REDIRECT', '').lower() in {'1', 'true', 'yes'}:

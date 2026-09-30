@@ -1,0 +1,9 @@
+{
+  "process_cgroup": "0::/system.slice/unbound-filter-development-memory-check.service",
+  "remaining_cgroup_bytes": 531656704,
+  "container_available_bytes": 1748272528,
+  "configured_service_memory_max_bytes": 536870912,
+  "full_refused_before_launch": true,
+  "error": "Insufficient filter validation memory headroom: conservative requirement 1,108 MiB, available validator budget 507 MiB. Existing rules are retained. Review container/service memory limits; do not enable a huge feed solely because its import succeeds.",
+  "small_policy_preflight_passed": true
+}
