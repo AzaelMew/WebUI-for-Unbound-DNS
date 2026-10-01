@@ -217,3 +217,31 @@ protected; offline recovery refuses missing/corrupt expired artifacts.
 The four hash-verified feed inputs were copied to operator scratch for optional
 reproduction and removed from the resolver development area, freeing 179,696,283
 bytes. All isolated processes/temporary trees were cleaned.
+
+## 4 GiB update and deployment — 2026-10-01
+
+The original 2 GiB conclusion above is historical. After the operator increased
+the same container to4GiB, a new isolated test placed the WebUI/validator worker
+and resolver in separate2GiB-limited service cgroups **inside that one container**.
+No second container or production Full policy was used. The source snapshot
+remained2,389,473 domains for a like-for-like comparison.
+
+- Initial disabled import: **65.98s**.
+- Cold enable: **64.04s**.
+- **Live refresh while the old Full resolver remained running: 132.16s, passed.**
+- Isolated reload-to-DNS-readiness: **8.69s**;
+  the resolver PID stayed unchanged. This does not imply answers never pause
+  during parsing/reload.
+- Steady resolver RSS: **1003.64MiB**, sampled peak
+  **1003.86MiB**. Python peak **48.63MiB**.
+- Minimum sampled container headroom: **1764.92MiB**
+  (1.72GiB).
+- Candidate canary/block verification, staged/live validation and cleanup passed.
+  Production resolver PID5338/start identity was unchanged.
+
+This supports using Full on the measured4GiB/service2GiB budgets, subject to
+normal growth/load/resource admission checks. It does not prove a WAN speedup
+versus an AdGuard forwarding chain. The committed feature was then deployed
+without activating Full: the existing230,960-domain subscription was preserved
+and schema-migrated, listeners/auth/TLS retained, scheduler kept off. Raw test
+and deployment results are in `benchmarks/2026-10-01/`.
