@@ -10,7 +10,10 @@ down DNS for an entire LAN. Treat every change as high-stakes.
 
 Upstream is [mayur-454/WebUI-for-Unbound-DNS](https://github.com/mayur-454/WebUI-for-Unbound-DNS);
 this fork (AzaelMew) layers a safety module, domain filters, container-aware
-memory reporting, and responsive UI fixes on top of the pinned upstream commit.
+memory reporting, and responsive UI fixes on top of upstream commit
+`233433be9565eba67d88d78401c44d917a33e5cd`. Read the current fork, not just upstream.
+Subscriptions now use versioned metadata and immutable file-backed caches;
+multi-million-domain support must preserve the existing safety architecture.
 
 ## Repository layout
 
@@ -18,13 +21,21 @@ memory reporting, and responsive UI fixes on top of the pinned upstream commit.
 |---|---|
 | `app.py` | Upstream FastAPI application (pinned upstream code; avoid editing) |
 | `auth.py`, `ssl_utils.py` | Upstream auth and TLS certificate helpers |
-| `run.py` | **The launcher.** Production entrypoint. Wires upstream through `safety.py`, `container_memory.py`, `filters.py`, then serves TLS-only uvicorn. Bind/listen port come from env (`WEBUI_LISTEN_HOST`, `WEBUI_LISTEN_PORT`), defaulting to `127.0.0.1:8443`. |
+| `run.py` | **The launcher.** Installs safety, memory, filters and opt-in refresh lifecycle hooks, then serves TLS-only uvicorn. Listener env defaults to `127.0.0.1:8443`; preserve deployment-specific bind/bootstrap/redirect settings via drop-ins. |
 | `safety.py` | Deployment policy layer. Disables upstream's lossy form saves, re-implements raw save/restore as validated transactions, adds login/setup CSRF, HTTPS-only cookies, rate limiting. |
-| `filters.py` | Domain filter manager: manual blocks, allowlist exceptions, HTTPS blocklist subscriptions. Writes only the managed fragment `unbound.conf.d/webui-filters.conf`. |
+| `filters.py` | Auth/CSRF-protected filter API, strict source parsers, schema migration and transactional updates. Writes only `unbound.conf.d/webui-filters.conf` plus owned filter data/backups. |
+| `filter_store.py` | Immutable SQLite cache generations and bounded disk-backed unions/rendering. No subscription domain arrays in state/API snapshots. |
+| `filter_resources.py` | Container/service/disk admission checks and finite validator address-space cap through a fresh interpreter/exec wrapper. |
+| `filter_activation.py` | Bounded wire-DNS verification of the loaded fragment's reserved TXT canary and representative blocked query. |
+| `filter_refresh.py` | Global opt-in scheduler; starts/stops through application lifecycle, refreshes enabled lists serially. |
+| `filter_recovery.py` | Explicit offline validation/restore of managed fragment/state. Never activates DNS automatically. |
 | `container_memory.py` | Reports container cgroup working-set memory instead of host `/proc/meminfo` (LXC hides the parent limit; override via `WEBUI_CONTAINER_MEMORY_BYTES`). |
-| `templates/`, `static/` | Jinja templates and assets. `responsive.css` is ours; the rest is upstream. |
+| `templates/`, `static/` | Jinja/assets; fork-owned filter page/JS and responsive CSS. Keep remote values in safe DOM text/value APIs. |
 | `unbound-webui.service` | Reference systemd unit for the deployed service. |
 | `DEPLOYMENT.md` | Operator-facing install/maintenance notes for the live deployment. |
+| `SCALABLE_FILTERS.md` | Exact schema, formats, configurable bounds, transaction/backup/recovery contract. |
+| `BENCHMARKS.md`, `benchmarks/` | Measured comparisons and raw results; distinguish historical 2 GiB runs from successful 4 GiB live-refresh tests. |
+| `filter_benchmark.py`, `probe_tif_*.py`, `probe_filter_*.py` | Guarded isolated benchmark helpers/wrappers. Not production filter toggles. |
 
 ## Golden rules
 
@@ -39,27 +50,126 @@ memory reporting, and responsive UI fixes on top of the pinned upstream commit.
    if any suite imports the production app first, later environment overrides
    (`DEFAULT_CONFIG_FILE` etc.) silently don't apply and a test can overwrite
    the live config. This exact failure happened once; `test_import_isolation.py`
-   guards it. Keep that guard green.
+   guards it. Keep that guard green. Its deliberate pre-import is an exception
+   for cache-poisoning coverage, run only from the isolated development copy.
 4. **Don't commit secrets or host-specific state.** `users.json`, `.secret_key`,
    `ssl_cert.pem`/`ssl_key.pem`, `backups/`, `.env`, and any live resolver
-   configuration are gitignored — keep them that way.
+   configuration are gitignored — keep them that way. Do not commit live
+   `filter-data/`, `filter-backups/` or literal giant feed fixtures; retain small
+   benchmark metadata/hashes, not private policy/config dumps.
 5. **Don't hardcode operator addresses** (IPs, LAN subnets, hostnames) into
    source. They belong in env vars, systemd drop-ins, or deployment docs.
+6. **Do not enable Full, change client DNS or reload/restart production Unbound
+   as part of development/testing.** SSH access is not implicit rollout approval.
+   A requested WebUI deployment must preserve existing policies/auth/listeners.
+
+## Filter invariants
+
+- Keep state schema 2 metadata-only for subscriptions; manual arrays remain
+  separate. Immutable cache references must stay confined beneath `filter-data`.
+  Migrate valid v1 data without dropping metadata, rules, caches or enabled flags,
+  retaining the exact v1 backup and never activating DNS during migration.
+- Preserve allowlist subtree precedence against every managed source. Local-zone
+  output remains `always_nxdomain` with more-specific `transparent` exceptions;
+  RPZ is strict QNAME NXDOMAIN input, not arbitrary remote Unbound configuration.
+  Test omitted-owner/multiline metadata and split-feed boundaries using actual
+  publisher syntax. Unsupported RPZ actions must reject the whole generation.
+- New subscriptions start disabled and require a successful refresh. Multiple
+  sources are one logical generation: validate every source/redirect, reject
+  duplicates, and preserve the entire last-good generation if any source fails.
+- Retain HTTPS/443, no URL userinfo, public/global-only DNS answers, TLS hostname
+  verification, numeric-address pinning, redirect revalidation and bounded reads.
+  Never weaken SSRF protection to make a feed work.
+- Do not recreate large arrays, sets, deep copies or whole-file fragment reads in
+  the manager. Snapshot/API response size must stay independent of feed size.
+  Defaults are 96 MiB/source, 192 MiB/refresh combined, 3M aggregate cached/manual
+  domains including disabled lists, 25 subscriptions and 8 sources; enforce actual
+  configured finite values and show them in UI/errors.
+- Preserve preparation → staged full-tree/fragment validation → complete rollback
+  data → atomic managed replacement → live validation → activation and actual DNS
+  verification → metadata commit. Failed activation must verify restored policy.
+  A service being `active` is not proof that the candidate loaded.
+- Fault-inject before/after rename and directory fsync. A failed write may already
+  be visible: never delete a generation referenced by persisted state, retained
+  archives, an active refresh or an uncertain recovery journal. GC must not race
+  cache preparation outside the transaction lock.
+- Publish backups from hidden temporary archives only after close/fsync, gzip CRC,
+  safe tar member and manifest/state/cache checks. Reject symlink/special config
+  entries before staging; serialize regular hardlinks as regular data. Verify both
+  new and reused compressed blobs before live changes. Durably sync rollback
+  deletions before clearing journals.
+- Ten retained archives depend on shared gzip blobs and cache generations: a
+  `.tgz` alone is not a complete recovery set. Test distinct changing generations,
+  not only repeated identical backups. Offline recovery defaults to dry-run,
+  requires the operator to stop the WebUI, restores only managed data and never silently
+  activates DNS. Do not delete a journal or reset malformed state to force startup.
+- Automatic refresh is off by default; no import-time downloads. Preserve explicit
+  lifecycle hooks, same-list exclusion, bounded operations and failed-attempt
+  metadata. Test hooks with a real FastAPI/TestClient lifespan, not only fake apps.
+
+## Capacity and benchmark gates
+
+The documented target is now **4 GiB RAM**, with a **2 GiB WebUI/validator service
+cap**. The reference unit's conservative 512 MiB default is overridden on the
+host; do not bake operator resources/addresses into generic source.
+
+- Unbound's Full local-zone resolver and validator each measured about 1 GiB.
+  The old 2 GiB/512 MiB budget failed admission; the same container upgraded to
+  4 GiB passed an isolated live refresh with about 1.72 GiB minimum headroom.
+  Separate service cgroups in that test did **not** mean separate containers.
+- Account for the old resolver, validation child, Python, page cache and reload
+  transients. `MemoryMax` includes service children. Measure actual cgroup limits
+  and use the true container allocation override when LXC hides its parent limit.
+  Keep conservative admission checks, 384 MiB memory reserve and 256 MiB disk
+  reserve; don't bypass them merely because one isolated startup fits.
+- Native RPZ was worse in the measured comparison; do not change representation
+  without new installed-version/configuration measurements and actual allowlist
+  wire-DNS proof through the shipped importer.
+- Use separate temporary config/filter trees, private control sockets and high
+  loopback ports. Never bind/query port 53 in benchmark helpers, include production
+  config, mutate live filters, or call production service activation.
+- Require an expected DNS response for readiness, not just a TCP-open port. Own
+  and reap isolated children on success, exceptions, timeout and Ctrl-C; remove
+  temporary trees. Use finite resource/headroom guards and one heavy workload at
+  a time unless explicitly measuring safe overlap.
+- Record exact URLs/bytes/domain hashes and code revision. Separate fresh Python
+  peak RSS, child resolver/validator RSS, container memory and file cache. Report
+  repeated cached/uncached/blocked query counts, median/p95/max and errors. Do not
+  present mock-upstream latency as WAN performance or missing metrics as success.
+- Full reload readiness measured about 8.7 seconds; do not promise continuous
+  answering during reload or a client speedup without measuring it. Feed growth,
+  workload/cache growth and backup/staging disk use still need admission checks.
 
 ## Testing
 
-Tests require the app venv (FastAPI/Pydantic v2/httpx). Run them on the target
-host, not a random machine:
+Tests require the deployment venv (FastAPI/Pydantic v2/httpx) and target Unbound
+tools. Run from a separate development copy on that host, **not** the live
+`/opt/unbound-webui` directory. The verified full suite is 127 Python cases plus
+12 Node UI cases; keep import-isolation and the real TLS launcher smoke green.
 
 ```bash
-python -m unittest test_container_memory test_safety -v   # isolated suites
-python -m unittest test_filters -v
-python test_import_isolation.py                            # must print PASS
+<deployment-venv>/bin/python -m unittest \
+  test_container_memory test_safety test_filters test_filters_scaling \
+  test_filter_recovery test_filter_activation test_filter_resources \
+  test_filter_regressions test_filter_refresh test_filter_benchmark \
+  test_filter_semantics test_filter_backend_probe test_filter_storage_probe -v
+<deployment-venv>/bin/python test_import_isolation.py  # must print PASS
+node --test test_filters_ui.js
+node --check static/js/filters.js
+git diff --check
 ```
 
-Never execute `verify_filter_routes.py` or the `probe_tif_*.py` scripts
-against a deployment that has real user filters — they mutate and restore
-live DNS rules and refuse to run over non-empty state.
+`verify_filter_routes.py` is a legacy live-mutating script: do not run it on the
+deployment. Current `probe_tif_mini.py`/`probe_tif_full.py` wrap the isolated
+`filter_benchmark.py`; `probe_filter_backend.py` and `probe_filter_storage.py`
+measure actual backend/retention behavior with controlled cached sources.
+Inspect their guards/`--help` before use, and keep workspace/output/source paths
+outside production. Never treat `TMPDIR` alone as authorization for a path.
+
+Use generative fixtures, not millions of literal repository domains. For launcher
+smokes, explicitly set temporary config/backup paths, loopback/nonproduction TLS
+port and refresh off; do not import the live launcher. Exercise real framework
+lifecycle APIs and confirm Secure cookies/CSRF/auth boundaries.
 
 ## Deployment model
 
@@ -67,8 +177,22 @@ The live instance runs from `/opt/unbound-webui` on the resolver LXC as a
 systemd service (`unbound-webui.service`), synced from this repo by scp —
 it is not a git checkout. Deploy by editing here, testing on the target,
 then copying files. Production config is validated (`unbound-checkconf`)
-and backed up before every filter or raw-config change, with automatic
-rollback on failure.
+and backed up before every filter or raw-config change, with automatic rollback
+and explicit offline recovery for uncertain publication failures.
+
+The scalable feature is deployed on the documented target, preserving its existing
+230,960-domain enabled subscription. **Production Full was not added/enabled;
+automatic refresh remains off.** Do not infer activation permission from passing
+benchmarks. Keep `main` unmerged until the user explicitly requests integration;
+commit/publish feature work only within the requested branch scope.
+
+Before an approved rollout, snapshot configs and policies, back up the private
+application/filter state, preserve secrets/TLS/`.configured`/firewall and bind/
+bootstrap/redirect drop-ins, stop only the WebUI, copy the approved modules/assets,
+then verify migration, hashes/policy counts, HTTPS/auth and unchanged resolver
+PID/config. Read-only deployment checks may query production DNS; isolated
+benchmarks may not. No new dependency or client DNS change is needed for filtering
+inside the same Unbound container. See `DEPLOYMENT.md` for the full procedure.
 
 ## Style
 
