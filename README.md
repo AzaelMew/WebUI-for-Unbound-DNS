@@ -222,8 +222,9 @@ deployment checks must also pass before rollout.
 The known Starlette/httpx deprecation warning does not represent a failed test.
 
 See [AGENTS.md](AGENTS.md) for the full test commands and probe boundaries.
-`verify_filter_routes.py` is a legacy live-mutating script and must not be run on
-the deployment. Current `probe_tif_mini.py`/`probe_tif_full.py` are guarded isolated
+Benchmark/probe tooling lives in `tools/` (run its tests with
+`python -m unittest discover -s tools`). `tools/verify_filter_routes.py` is a legacy live-mutating script and must not be run on
+the deployment. Current `tools/probe_tif_mini.py`/`tools/probe_tif_full.py` are guarded isolated
 benchmark wrappers, not production filter toggles.
 
 <details>
