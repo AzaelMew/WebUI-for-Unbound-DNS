@@ -126,7 +126,7 @@ SECTIONS = [
         _f('rrset-cache-size', 'size', 'RRset cache', 'Size such as 256m. Normally about twice the message cache.', min=65536, max=64 << 30),
         _f('neg-cache-size', 'size', 'Aggressive NSEC cache', 'Size such as 4m.', min=65536, max=64 << 30),
         _f('rrset-roundrobin', 'bool', 'Round-robin RRsets', 'Rotate the order of records in answers.'),
-        _f('outgoing-range', 'int', 'Outgoing range', 'Number of outgoing ports per thread.', min=16, max=65535),
+        _f('outgoing-range', 'int', 'Outgoing range', 'Number of outgoing ports per thread. Unbound lowers the running value on its own when the open-file limit is smaller; that is not a pending change.', min=16, max=65535, clamped=True),
         _f('num-queries-per-thread', 'int', 'Queries per thread', 'Concurrent requests per thread before queueing.', min=1, max=1000000),
         _f('so-rcvbuf', 'size', 'Socket receive buffer', 'Larger values avoid drops under bursts. May need a higher net.core.rmem_max.', min=0, max=1 << 30),
         _f('so-sndbuf', 'size', 'Socket send buffer', 'Send-buffer size. 0 keeps the OS default.', min=0, max=1 << 30),
@@ -225,6 +225,23 @@ def comparable(field, text):
         except ConfigError:
             return text
     return text
+
+
+def in_sync(field, file_text, running_text):
+    """True when the running value is what the file asks for.
+
+    Unbound may legitimately run a *lower* value than configured for options that
+    it clamps to system limits (outgoing-range vs the open-file limit).
+    """
+    want, got = comparable(field, file_text), comparable(field, running_text)
+    if want == got:
+        return True
+    if field.get('clamped'):
+        try:
+            return 0 < int(got) <= int(want)
+        except ValueError:
+            return False
+    return False
 
 
 def display(field, text):
@@ -875,10 +892,11 @@ class ConfigManager:
             line = (model.occurrences(key) or [None])[-1]
             file_text = self._text(file_lines)
             run_text = None if isinstance(run_lines, Exception) else self._text(run_lines)
-            differs = run_text is not None and comparable(field, file_text) != comparable(field, run_text)
+            differs = run_text is not None and not in_sync(field, file_text, run_text)
+            reduced = run_text is not None and not differs and comparable(field, file_text) != comparable(field, run_text)
             if differs:
                 pending.append(key)
-            values[key] = {'value': display(field, file_text), 'configured': line is not None,
+            values[key] = {'value': display(field, file_text), 'configured': line is not None, 'reduced': reduced,
                            'source': f'{model.files[line.path].rel}:{line.index + 1}' if line else None,
                            'running': None if run_text is None else display(field, run_text), 'pending': differs}
         lists = {}
@@ -1370,7 +1388,7 @@ class ConfigManager:
                         return f'{key} is {self._text(got)!r}'
                 except ConfigError as exc:
                     return str(exc)
-            elif comparable(FIELDS[key], self._text(want)) != comparable(FIELDS[key], self._text(got)):
+            elif not in_sync(FIELDS[key], self._text(want), self._text(got)):
                 return f'{key} is {self._text(got)!r}, expected {self._text(want)!r}'
         if context['zones'] or context['removed_zones']:
             try:

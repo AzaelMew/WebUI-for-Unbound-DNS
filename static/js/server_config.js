@@ -226,6 +226,7 @@
         const info = state.values[field.key], parts = [];
         parts.push(info.configured ? `Set in ${info.source}` : 'Not set · Unbound default');
         if (info.pending) parts.push(`running: ${shown(info.running)} (reload pending)`);
+        else if (info.reduced) parts.push(`running: ${shown(info.running)} (Unbound lowered it to fit a system limit)`);
         if (field.key in draft.changes && draft.changes[field.key] === null) parts.push('will be removed on save');
         return parts.join(' · ');
     }
