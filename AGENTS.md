@@ -31,6 +31,7 @@ multi-million-domain support must preserve the existing safety architecture.
 | `filter_recovery.py` | Explicit offline validation/restore of managed fragment/state. Never activates DNS automatically. |
 | `rewrites.py`, `rewrites_recovery.py` | Dedicated A/AAAA rewrite API, revisioned drafts, own managed fragment/transactions and explicit offline recovery. Never modify filter policy or unmanaged overrides implicitly. |
 | `server_config.py` | Config page backend: schema-driven, line-preserving edits of the real config files, same transactional/rollback contract, raw editor, offline recovery CLI. Replaces upstream `/config`. |
+| `dashboard.py` | Read-only metrics dashboard: light-tree `stats_noreset` sampler, SQLite history (`dashboard-data/`), `/dashboard` + `/api/dashboard`. See `DASHBOARD.md`. Never changes config or enables logging. |
 | `container_memory.py` | Reports container cgroup working-set memory instead of host `/proc/meminfo` (LXC hides the parent limit; override via `WEBUI_CONTAINER_MEMORY_BYTES`). |
 | `templates/`, `static/` | Jinja/assets; fork-owned filter page/JS and responsive CSS. Keep remote values in safe DOM text/value APIs. |
 | `unbound-webui.service` | Reference systemd unit for the deployed service. |

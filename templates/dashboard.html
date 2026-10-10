@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="dash-page">
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <span class="badge badge-gray" id="dash-sampling">Loading</span>
+        <div class="btn-group dash-ranges" role="group" aria-label="Time range">
+            <button type="button" class="btn btn-ghost btn-sm" data-range="1h">1h</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-range="6h">6h</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-range="24h">24h</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-range="7d">7d</button>
+        </div>
+    </div>
+    <div id="dash-notice" class="alert alert-info" role="status" aria-live="polite">Loading metrics…</div>
+
+    <div class="grid-4 dash-tiles" style="margin-bottom:16px;">
+        <div class="stat-tile blue"><div class="stat-label">Queries</div><div class="stat-value blue" id="t-queries">—</div><div class="stat-sub" id="t-qps">—</div></div>
+        <div class="stat-tile green"><div class="stat-label">Cache hit rate</div><div class="stat-value green" id="t-hit">—</div><div class="stat-sub" id="t-hits">—</div></div>
+        <div class="stat-tile orange"><div class="stat-label">Recursion time</div><div class="stat-value orange" id="t-rec">—</div><div class="stat-sub" id="t-prefetch">—</div></div>
+        <div class="stat-tile red"><div class="stat-label">NXDOMAIN</div><div class="stat-value red" id="t-nx">—</div><div class="stat-sub" id="t-servfail">—</div></div>
+    </div>
+
+    <div class="grid-2">
+        <section class="card" aria-labelledby="c1-h"><div class="card-header"><h3 id="c1-h">Queries per second</h3><span class="dash-legend" id="l-qps"></span></div><div class="card-body"><div class="dash-chart" id="ch-qps" role="img" aria-label="Queries per second, cache hits and misses"></div></div></section>
+        <section class="card" aria-labelledby="c2-h"><div class="card-header"><h3 id="c2-h">Cache hit rate</h3></div><div class="card-body"><div class="dash-chart" id="ch-hit" role="img" aria-label="Cache hit percentage"></div></div></section>
+        <section class="card" aria-labelledby="c3-h"><div class="card-header"><h3 id="c3-h">Recursion time (ms)</h3></div><div class="card-body"><div class="dash-chart" id="ch-rec" role="img" aria-label="Average recursion time in milliseconds"></div></div></section>
+        <section class="card" aria-labelledby="c4-h"><div class="card-header"><h3 id="c4-h">Response codes per second</h3><span class="dash-legend" id="l-rc"></span></div><div class="card-body"><div class="dash-chart" id="ch-rc" role="img" aria-label="Answers per second by response code"></div></div></section>
+    </div>
+
+    <div class="grid-3">
+        <section class="card" aria-labelledby="l1-h"><div class="card-header"><h3 id="l1-h">Query types</h3></div><div class="card-body" id="list-qtypes"></div></section>
+        <section class="card" aria-labelledby="l2-h"><div class="card-header"><h3 id="l2-h">Response codes</h3></div><div class="card-body" id="list-rcodes"></div></section>
+        <section class="card" aria-labelledby="l3-h"><div class="card-header"><h3 id="l3-h">Cache</h3></div><div class="card-body" id="list-cache"></div></section>
+    </div>
+
+    <div class="grid-3">
+        <section class="card" aria-labelledby="l4-h"><div class="card-header"><h3 id="l4-h">Top domains</h3></div><div class="card-body" id="list-domains"></div></section>
+        <section class="card" aria-labelledby="l5-h"><div class="card-header"><h3 id="l5-h">Top clients</h3></div><div class="card-body" id="list-clients"></div></section>
+        <section class="card" aria-labelledby="l6-h"><div class="card-header"><h3 id="l6-h">Top blocked</h3></div><div class="card-body" id="list-blocked"></div></section>
+    </div>
+    <p class="text-dim text-sm" id="dash-top-note"></p>
+    <noscript><div class="alert alert-warning">JavaScript is required for the dashboard charts.</div></noscript>
+</div>
+{% endblock %}
+{% block scripts %}<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" /><script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>{% endblock %}
