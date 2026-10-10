@@ -44,12 +44,18 @@ container-aware memory reporting and responsive UI improvements.
   and compressed backup artifacts with an explicit offline recovery CLI.
 - **Opt-in scheduled refresh:** off by default; configurable global interval for
   enabled subscriptions, bounded operations and no overlapping same-list refresh.
-- **Container RAM reporting and responsive dark/orange dashboard.**
+- **Metrics dashboard:** `/dashboard` charts query rate, cache hit rate, recursion
+  time and response codes over 1 h to 7 d, with query-type, response-code and cache
+  lists plus top domains, clients and blocked names. It is read-only: a light-tree
+  `unbound-control` sampler stores a small SQLite history, and the top lists are parsed
+  from Unbound's own query log. It never changes resolver configuration or enables
+  logging. See `DASHBOARD.md`.
+- **Container RAM reporting and responsive dark/orange UI.**
 
 DNS filtering does not provide cosmetic filtering, remove same-domain ads or
 prevent clients from bypassing DNS through another resolver/custom DoH. It also
 isn't a replacement for every AdGuard Home feature such as its client-management
-or query-log interface.
+or a searchable query-log browser (the dashboard shows aggregated top lists only).
 
 ## Documentation
 
@@ -58,6 +64,7 @@ or query-log interface.
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Installation/upgrade, live deployment, preserving listeners/auth/state and operator maintenance |
 | [SCALABLE_FILTERS.md](SCALABLE_FILTERS.md) | State schema/migration, supported syntax, all settings, transactions, backup set and offline recovery |
 | [SERVER_CONFIG.md](SERVER_CONFIG.md) | Config page: line-preserving edits, pending-vs-running view, transaction/verification, lock-out invariants and offline recovery |
+| [DASHBOARD.md](DASHBOARD.md) | Metrics dashboard: sampler, history storage, charts, query-log sources, settings and tests |
 | [DNS_REWRITES.md](DNS_REWRITES.md) | Direct A/AAAA editing, drafts, bulk import, conflict handling and offline rewrite recovery |
 | [BENCHMARKS.md](BENCHMARKS.md) | Actual Mini/Full and native-RPZ comparisons, importer/resolver memory, latency and 4 GiB live-refresh results |
 | [AGENTS.md](AGENTS.md) | Contributor/agent safety rules, module ownership, isolated testing and deployment boundaries |
@@ -118,6 +125,10 @@ Use environment variables/systemd drop-ins for deployment-specific settings:
 - `WEBUI_HTTP_REDIRECT`, `WEBUI_HTTP_PORT`: optional redirect-only HTTP listener.
 - `WEBUI_CONTAINER_MEMORY_BYTES`: actual container allocation when LXC hides its
   parent memory limit; it is not the WebUI service's `MemoryMax`.
+- `WEBUI_DASHBOARD_SAMPLE_SECONDS` (default `60`, `0` disables) and
+  `WEBUI_DASHBOARD_RETENTION_DAYS` (default `7`): dashboard history sampling.
+  `WEBUI_DASHBOARD_QUERY_LOG` overrides the Unbound log file read for the top lists
+  (default `/var/log/unbound/unbound.log`). History is stored in `dashboard-data/`.
 
 If replacing an older launcher with hardcoded bind/bootstrap settings, move those
 settings into the drop-in **before** the upgrade so existing URLs and firewall
@@ -217,8 +228,9 @@ reset state, or automatically restart production DNS to bypass recovery.
 Use the deployment's venv from a **separate development copy**, with temporary
 config/filter trees and asserted path isolation. Never run tests/probes against
 production filter state. The integrated rewrite/filter/config suite contains 199 Python
-cases plus 44 Node UI cases; the import-isolation guard passed. Launcher and live
-deployment checks must also pass before rollout.
+cases plus 44 Node UI cases; the import-isolation guard passed. The dashboard adds
+`test_dashboard.py` and `test_dashboard_ui.js` (run them with the commands in
+`DASHBOARD.md`). Launcher and live deployment checks must also pass before rollout.
 The known Starlette/httpx deprecation warning does not represent a failed test.
 
 See [AGENTS.md](AGENTS.md) for the full test commands and probe boundaries.
