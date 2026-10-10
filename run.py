@@ -23,6 +23,7 @@ from filters import install as install_filters
 from filter_refresh import install as install_filter_refresh
 from rewrites import install as install_rewrites
 from server_config import install as install_server_config
+from dashboard import install as install_dashboard
 from ssl_utils import ensure_ssl_cert
 import uvicorn
 install(upstream)
@@ -31,6 +32,7 @@ filter_manager = install_filters(upstream)
 filter_refresh_worker = install_filter_refresh(upstream.app, filter_manager)
 rewrite_manager = install_rewrites(upstream)
 server_config_manager = install_server_config(upstream)
+dashboard = install_dashboard(upstream)
 cert, key = ensure_ssl_cert()
 if __name__ == '__main__':
     if os.environ.get('WEBUI_HTTP_REDIRECT', '').lower() in {'1', 'true', 'yes'}:
