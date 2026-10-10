@@ -1,0 +1,11 @@
+{
+  "command": "FILTER_BENCHMARK_WORKSPACE=/opt/unbound-filter-development/benchmark /opt/unbound-webui/venv/bin/python -m unittest test_filter_benchmark test_filter_semantics -v",
+  "tests_run": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "execution_seconds": 2.026,
+  "result": "OK",
+  "production_after": "5338 Wed Sep 30 18:25:11 2026 /usr/sbin/unbound -d -p",
+  "coverage": ["workspace and environment-path guards", "cached source hash verification", "terminate/wait and kill fallback", "pipe closure", "SIGINT cleanup", "DNS-readiness timeout cleanup", "port 53 rejection", "import side-effect isolation", "file-backed dedup and allow precedence", "real isolated baseline/localzone/RPZ queries and cache upstream counts", "apex and deep-descendant blocks", "allowed subtree and explicit blocked child overridden by allow parent", "unrelated names allowed", "resolver cleanup after query exception"]
+}

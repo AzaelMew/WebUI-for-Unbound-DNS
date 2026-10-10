@@ -303,3 +303,60 @@
         transition: none;
     }
 }
+
+/* Rewrites use the existing dark/orange cards, with wrap-safe IPs/actions. */
+#rewrite-page .form-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+#rewrite-page .rewrite-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#rewrite-page .rewrite-checkbox { display: flex; align-items: baseline; gap: 8px; }
+#rewrite-page .rewrite-checkbox input { flex-shrink: 0; }
+#rewrite-page .rewrite-record,
+#rewrite-page .rewrite-preview-row { min-width: 0; overflow-wrap: anywhere; }
+#rewrite-page button { min-height: 44px; }
+#rewrite-page input:focus-visible,
+#rewrite-page textarea:focus-visible,
+#rewrite-page select:focus-visible,
+#rewrite-page button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+#rewrite-records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+#rewrite-records .rewrite-record { margin-bottom: 0; }
+@media (max-width: 900px) {
+    #rewrite-records { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Server configuration editor: same dark/orange cards, wrap-safe long values. */
+#config-page [hidden] { display: none !important; }
+#config-page .cfg-panel .card { margin-bottom: 16px; }
+#config-page .cfg-row { align-items: start; border-left: 3px solid transparent; padding-left: 10px; }
+#config-page .cfg-row.cfg-modified { border-left-color: var(--orange); background: rgba(255, 152, 0, 0.06); }
+#config-page .cfg-key { color: var(--text-muted); font-size: 11px; display: block; margin-top: 2px; }
+#config-page .cfg-control { min-width: 0; }
+#config-page .cfg-meta { margin-top: 4px; overflow-wrap: anywhere; }
+#config-page .cfg-field-actions { gap: 6px; margin-top: 4px; }
+#config-page .cfg-field-actions .btn { padding: 2px 10px; min-height: 32px; }
+#config-page .cfg-list textarea,
+#config-page .cfg-zone textarea,
+#config-page .cfg-zone input.form-control { width: 100%; }
+#config-page .cfg-zone label.form-label { display: block; margin: 10px 0 4px; }
+#config-page .cfg-check { display: flex; align-items: baseline; gap: 8px; }
+#config-page .cfg-zones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+#config-page .cfg-zone { margin-bottom: 0; min-width: 0; }
+#config-page .cfg-bar {
+    position: sticky; bottom: 0; z-index: 100; margin-top: 16px; padding: 10px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 6px;
+}
+#config-page .cfg-summary { min-width: 0; flex: 1 1 320px; color: var(--text-dim); font-size: 13px; }
+#config-page .cfg-changes { margin: 4px 0 0; padding-left: 18px; max-height: 120px; overflow-y: auto; font-size: 12px; overflow-wrap: anywhere; }
+#config-page .cfg-actions { flex: 0 1 auto; }
+#config-page #cfg-pending { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+#config-page #cfg-files td { overflow-wrap: anywhere; }
+#config-page .code-area { width: 100%; min-height: 280px; }
+#config-page button { min-height: 44px; }
+#config-page [aria-invalid="true"] { border-color: var(--red); }
+#config-page input:focus-visible,
+#config-page textarea:focus-visible,
+#config-page select:focus-visible,
+#config-page button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+@media (max-width: 900px) {
+    #config-page .cfg-zones { grid-template-columns: minmax(0, 1fr); }
+    #config-page .form-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}

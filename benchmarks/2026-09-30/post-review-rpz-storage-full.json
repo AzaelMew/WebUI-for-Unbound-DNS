@@ -1,0 +1,108 @@
+{
+  "timestamp_utc": "2026-09-30T22:57:20.854782+00:00",
+  "activated": false,
+  "method": "Actual disabled multi-source refresh, then synthetic one-domain variants with real cache copies/compressed backups; no resolver activation",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/tif-1.txt",
+      "bytes": 65020258,
+      "sha256": "335b3abd45697a50a2703c1c568e7c25a006513a735ac48460c1d0881d84bdbc"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/tif-2.txt",
+      "bytes": 61506522,
+      "sha256": "85c3cba3367262b7df2ae7a76c0e6c76c02bf7c29e42460c73febd9d19d07611"
+    }
+  ],
+  "source_code_sha256": {
+    "filters.py": "ad3bd7e6713eb3ebcc8374a2bcaed8de086bfd11256f3b3837ef4e56b581969e",
+    "filter_store.py": "545c793acd098f21bcf22f297ec401979fde617725d8f0004e6a4c1696fba212",
+    "filter_resources.py": "b50069957004aa98844ede322812a74dd715346c1147b1e1169a672cb63516ac",
+    "filter_activation.py": "80ab2bc00a287388f036edeb59212d7bc95bc282cebca263b55097abd7398033"
+  },
+  "affinity": [
+    21
+  ],
+  "import": {
+    "seconds": 165.21281143301167,
+    "count": 2389473,
+    "unsupported": 0,
+    "downloaded_bytes": 126526780,
+    "sqlite_bytes": 57040896,
+    "domain_sha256": "10ad0151b5f1a7c801e73f99507e506d55fc2d530412dc4e2d048e8202382882",
+    "python_self_peak_rss_mib": 49.4453125,
+    "snapshot_bytes": 965,
+    "state_bytes": 711
+  },
+  "render": {
+    "seconds": 12.04589806299191,
+    "bytes": 125388648,
+    "gzip_bytes": 13168316
+  },
+  "rollback_restored_exact_bytes": true,
+  "retention": {
+    "archives": 10,
+    "distinct_blobs": 10,
+    "retained_caches": 10,
+    "compressed_blob_bytes": 131683420,
+    "cache_bytes": 570408960,
+    "allocated_data_bytes": 702144512,
+    "seconds": 271.723269611015,
+    "generations": [
+      {
+        "archive_bytes": 897,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 900,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 900,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 899,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 898,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 895,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 898,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 906,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 897,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      },
+      {
+        "archive_bytes": 898,
+        "compressed_fragment_bytes": 13168342,
+        "cache_bytes": 57040896
+      }
+    ],
+    "scope": "distinct synthetic minor changes to the actual feed; retained caches plus compressed rollback fragments, not ten remote snapshots"
+  },
+  "minimum_disk_free_bytes_sampled": 499179520,
+  "production_unchanged": true,
+  "temporary_tree_removed": true
+}

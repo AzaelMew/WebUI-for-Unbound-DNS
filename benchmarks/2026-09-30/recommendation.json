@@ -1,0 +1,473 @@
+{
+  "recommendation": "Keep always_nxdomain local-zones plus transparent allows; adopt bounded/file-backed import and rendering. Do not switch to native RPZ for this 2 GiB deployment. Mini is comfortable; Full should be explicit opt-in with memory/disk preflight and warnings.",
+  "backend_scope": "Measurements compare original pinned pure algorithms (limits lifted only for comparison) to standalone SQLite/file-backed benchmark parser, NOT the parent agent's final backend implementation.",
+  "installed_rpz": {
+    "unbound": "1.17.1",
+    "man_source": "/usr/share/man/man5/unbound.conf.5.gz on target",
+    "requires_module": "respip validator iterator",
+    "zone_configuration": "rpz: name and zonefile; SOA/NS required",
+    "nxdomain_records": "domain CNAME . and *.domain CNAME .",
+    "allow_records": "domain CNAME rpz-passthru. and *.domain CNAME rpz-passthru.",
+    "precedence": "Remove all block entries covered by allow suffix before emitting either representation; explicit children below allowed parent remain allowed. Actual isolated DNS tests passed apex, deep descendants, narrow exception and allow parent vs explicit child."
+  },
+  "cpu": {
+    "target_nproc": 2,
+    "allowed_cpus": [
+      21,
+      26
+    ],
+    "benchmark_cpu": 21,
+    "implementation": "taskset -c 21 for all workers, checkconf and resolvers; driver/mock also pinned to 21"
+  },
+  "safety": {
+    "production_pid": 5338,
+    "production_start": "Wed Sep 30 18:25:11 2026",
+    "unchanged_in_all_recorded_runs": true,
+    "no_production_dns_queries": true,
+    "no_production_reload": true,
+    "minimum_memory_headroom_mib": 384,
+    "resolver_address_space_cap_mib": 1024,
+    "isolated_children_reaped": true,
+    "tests_passed_on_target": 15,
+    "rss_sampling_period_ms": 10,
+    "baseline_checkconf_rss_zero_caveat": "Fast checkconf exited before the first RSS sample; zero sampled peak is not zero actual memory."
+  },
+  "caveats": [
+    "Single sequential run per final feed/representation, not a throughput/concurrency stress test.",
+    "Only deterministic loopback upstream; latency excludes WAN and real DNSSEC trust-anchor validation.",
+    "Baseline startup measurement is quantized by 100 ms DNS retry timeout plus 25 ms polling; actual baseline startup may be shorter.",
+    "Full RPZ checkconf exceeded the 1 GiB address-space guard; no Full RPZ startup/latency figures were produced or fabricated.",
+    "Full local-zones fit alone, but original Python peak ~983 MiB plus an already active Full resolver ~1003 MiB would exhaust the 2 GiB container; bounded imports are essential.",
+    "Full final run swap usage rose from 28.242 to 64.984 MiB, so successful DNS tests do not mean absence of memory pressure.",
+    "Hardlink backup bytes exclude directory metadata and future distinct file versions; gzip sizes are measured, not estimates."
+  ],
+  "feeds": {
+    "mini": {
+      "source": {
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.mini.txt",
+        "bytes": 4243028,
+        "sha256": "52713a597419d81fb98f059bf040542a6a1e7d496e2bc55dede9e0199726e9c4",
+        "download_s": 0.6275924949441105,
+        "downloaded_at_utc": "2026-09-30T20:45:52.943578+00:00"
+      },
+      "domains": 199618,
+      "same_domain_set_with_original": true,
+      "original_python_peak_rss_mib": 117.4609375,
+      "bounded_python_peak_rss_mib": 28.54296875,
+      "parser": {
+        "unique_domains": 199618,
+        "records": 199618,
+        "unsupported": 0,
+        "parse_s": 3.279929650016129,
+        "domain_sha256": "9baab980cb2d2c6c13aad541b239394b1682b876a78f459dda204f121f06c08f",
+        "parse_peak_rss_mib": 28.32421875,
+        "localzone": {
+          "render_s": 0.3156585480319336,
+          "rules_domains": 199618,
+          "bytes": 10630212,
+          "storage": {
+            "bytes": 10630212,
+            "gzip_bytes": 1498179,
+            "hardlink_backup_additional_data_bytes": 0
+          }
+        },
+        "rpz": {
+          "render_s": 0.32696309802122414,
+          "rules_domains": 199618,
+          "bytes": 10880328,
+          "storage": {
+            "bytes": 10880328,
+            "gzip_bytes": 1919655,
+            "hardlink_backup_additional_data_bytes": 0
+          }
+        },
+        "sqlite_cache_bytes": 4894720,
+        "worker_s": 4.06749721604865,
+        "python_peak_rss_mib": 28.54296875,
+        "minimum_headroom_mib": 1753.46484375,
+        "sampled_peak_rss_mib": 28.54296875,
+        "cache_storage": {
+          "bytes": 4894720,
+          "gzip_bytes": 2149424,
+          "hardlink_backup_additional_data_bytes": 0
+        },
+        "canonical_domain_cache_storage": {
+          "bytes": 3643546,
+          "gzip_bytes": 1348386,
+          "hardlink_backup_additional_data_bytes": 0
+        },
+        "source_storage": {
+          "bytes": 4243028,
+          "gzip_bytes": 1359495,
+          "hardlink_backup_additional_data_bytes": 0
+        }
+      },
+      "resolvers": [
+        {
+          "kind": "baseline",
+          "checkconf_s": 0.008563546929508448,
+          "checkconf_peak_rss_mib": 0.0,
+          "startup_dns_ready_s": 0.12558619503397495,
+          "startup_peak_rss_mib": 16.33984375,
+          "steady_rss_mib": 16.33984375,
+          "peak_rss_mib": 16.55859375,
+          "minimum_headroom_mib": 1762.6904296875,
+          "reload": {
+            "seconds": 0.06177810102235526,
+            "mode": "isolated UNIX control reload",
+            "response": "ok",
+            "dns": {
+              "rcode": 0,
+              "answers": [
+                "192.0.2.123"
+              ],
+              "ms": 51.376636
+            }
+          },
+          "cached": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.034023,
+            "p95_ms": 0.061795,
+            "max_ms": 0.237099,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "uncached": {
+            "count": 50,
+            "errors": 0,
+            "median_ms": 0.128369,
+            "p95_ms": 0.146044,
+            "max_ms": 0.160119,
+            "upstream_queries": 50,
+            "failures": []
+          },
+          "blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.1298475,
+            "p95_ms": 0.228802,
+            "max_ms": 0.386139,
+            "upstream_queries": 150,
+            "failures": []
+          },
+          "descendant_blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.034143,
+            "p95_ms": 0.053706,
+            "max_ms": 0.19176,
+            "upstream_queries": 1,
+            "failures": []
+          }
+        },
+        {
+          "kind": "localzone",
+          "checkconf_s": 0.5958930270280689,
+          "checkconf_peak_rss_mib": 91.4765625,
+          "startup_dns_ready_s": 0.5850136741064489,
+          "startup_peak_rss_mib": 94.65625,
+          "steady_rss_mib": 94.90625,
+          "peak_rss_mib": 94.90625,
+          "minimum_headroom_mib": 1664.7724609375,
+          "reload": {
+            "seconds": 0.7403704660246149,
+            "mode": "isolated UNIX control reload",
+            "response": "ok",
+            "dns": {
+              "rcode": 0,
+              "answers": [
+                "192.0.2.123"
+              ],
+              "ms": 576.284367
+            }
+          },
+          "cached": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.036002000000000006,
+            "p95_ms": 0.052405,
+            "max_ms": 0.190965,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "uncached": {
+            "count": 50,
+            "errors": 0,
+            "median_ms": 0.1329935,
+            "p95_ms": 0.201904,
+            "max_ms": 0.344556,
+            "upstream_queries": 50,
+            "failures": []
+          },
+          "blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.0343195,
+            "p95_ms": 0.056504,
+            "max_ms": 0.208255,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "descendant_blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.033186,
+            "p95_ms": 0.061382,
+            "max_ms": 0.228378,
+            "upstream_queries": 0,
+            "failures": []
+          }
+        },
+        {
+          "kind": "rpz",
+          "checkconf_s": 3.330075619975105,
+          "checkconf_peak_rss_mib": 244.88671875,
+          "startup_dns_ready_s": 2.9240652211010456,
+          "startup_peak_rss_mib": 252.578125,
+          "steady_rss_mib": 252.578125,
+          "peak_rss_mib": 254.7890625,
+          "minimum_headroom_mib": 1525.4873046875,
+          "reload": {
+            "seconds": 3.2902698720572516,
+            "mode": "isolated UNIX control reload",
+            "response": "ok",
+            "dns": {
+              "rcode": 0,
+              "answers": [
+                "192.0.2.123"
+              ],
+              "ms": 3280.966022
+            }
+          },
+          "cached": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.036303,
+            "p95_ms": 0.05733,
+            "max_ms": 0.076088,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "uncached": {
+            "count": 50,
+            "errors": 0,
+            "median_ms": 0.130685,
+            "p95_ms": 0.238411,
+            "max_ms": 0.293918,
+            "upstream_queries": 50,
+            "failures": []
+          },
+          "blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.0330255,
+            "p95_ms": 0.051668,
+            "max_ms": 0.180121,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "descendant_blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.032618999999999995,
+            "p95_ms": 0.058633,
+            "max_ms": 0.245931,
+            "upstream_queries": 0,
+            "failures": []
+          }
+        }
+      ]
+    },
+    "full": {
+      "source": {
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt",
+        "bytes": 48926475,
+        "sha256": "b8b539f0e1927ce42beb3c77566c628cb84dcb58c850c4a1aff4f73f2b0242bc",
+        "download_s": 1.1066813829820603,
+        "downloaded_at_utc": "2026-09-30T20:46:32.297385+00:00"
+      },
+      "domains": 2389473,
+      "same_domain_set_with_original": true,
+      "original_python_peak_rss_mib": 983.38671875,
+      "bounded_python_peak_rss_mib": 28.5546875,
+      "parser": {
+        "unique_domains": 2389473,
+        "records": 2389473,
+        "unsupported": 0,
+        "parse_s": 40.10617835307494,
+        "domain_sha256": "10ad0151b5f1a7c801e73f99507e506d55fc2d530412dc4e2d048e8202382882",
+        "parse_peak_rss_mib": 28.5546875,
+        "localzone": {
+          "render_s": 3.8309210770530626,
+          "rules_domains": 2389473,
+          "bytes": 125388620,
+          "storage": {
+            "bytes": 125388620,
+            "gzip_bytes": 13605537,
+            "hardlink_backup_additional_data_bytes": 0
+          }
+        },
+        "rpz": {
+          "render_s": 3.9367288179928437,
+          "rules_domains": 2389473,
+          "bytes": 126524684,
+          "storage": {
+            "bytes": 126524684,
+            "gzip_bytes": 18378198,
+            "hardlink_backup_additional_data_bytes": 0
+          }
+        },
+        "sqlite_cache_bytes": 56635392,
+        "worker_s": 49.561664913082495,
+        "python_peak_rss_mib": 28.5546875,
+        "minimum_headroom_mib": 1724.9228515625,
+        "sampled_peak_rss_mib": 28.5546875,
+        "cache_storage": {
+          "bytes": 56635392,
+          "gzip_bytes": 21065250,
+          "hardlink_backup_additional_data_bytes": 0
+        },
+        "canonical_domain_cache_storage": {
+          "bytes": 41757029,
+          "gzip_bytes": 12245759,
+          "hardlink_backup_additional_data_bytes": 0
+        },
+        "source_storage": {
+          "bytes": 48926475,
+          "gzip_bytes": 12444464,
+          "hardlink_backup_additional_data_bytes": 0
+        }
+      },
+      "resolvers": [
+        {
+          "kind": "baseline",
+          "checkconf_s": 0.0088166220812127,
+          "checkconf_peak_rss_mib": 0.0,
+          "startup_dns_ready_s": 0.1256184100639075,
+          "startup_peak_rss_mib": 16.12109375,
+          "steady_rss_mib": 16.12109375,
+          "peak_rss_mib": 16.33984375,
+          "minimum_headroom_mib": 1762.8974609375,
+          "reload": {
+            "seconds": 0.07010394800454378,
+            "mode": "isolated UNIX control reload",
+            "response": "ok",
+            "dns": {
+              "rcode": 0,
+              "answers": [
+                "192.0.2.123"
+              ],
+              "ms": 58.120347
+            }
+          },
+          "cached": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.036952,
+            "p95_ms": 0.059481,
+            "max_ms": 0.214316,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "uncached": {
+            "count": 50,
+            "errors": 0,
+            "median_ms": 0.1412405,
+            "p95_ms": 0.175536,
+            "max_ms": 0.338771,
+            "upstream_queries": 50,
+            "failures": []
+          },
+          "blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.14233200000000001,
+            "p95_ms": 0.23042,
+            "max_ms": 0.372447,
+            "upstream_queries": 150,
+            "failures": []
+          },
+          "descendant_blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.035961,
+            "p95_ms": 0.067573,
+            "max_ms": 0.215058,
+            "upstream_queries": 1,
+            "failures": []
+          }
+        },
+        {
+          "kind": "localzone",
+          "checkconf_s": 7.905639157048427,
+          "checkconf_peak_rss_mib": 1000.1796875,
+          "startup_dns_ready_s": 6.964425738085993,
+          "startup_peak_rss_mib": 1003.15625,
+          "steady_rss_mib": 1003.42578125,
+          "peak_rss_mib": 1003.64453125,
+          "minimum_headroom_mib": 543.84765625,
+          "reload": {
+            "seconds": 9.763444565003738,
+            "mode": "isolated UNIX control reload",
+            "response": "ok",
+            "dns": {
+              "rcode": 0,
+              "answers": [
+                "192.0.2.123"
+              ],
+              "ms": 7849.948008
+            }
+          },
+          "cached": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.036016,
+            "p95_ms": 0.069102,
+            "max_ms": 0.239886,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "uncached": {
+            "count": 50,
+            "errors": 0,
+            "median_ms": 0.14028649999999998,
+            "p95_ms": 0.197208,
+            "max_ms": 0.383478,
+            "upstream_queries": 50,
+            "failures": []
+          },
+          "blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.036140000000000005,
+            "p95_ms": 0.069272,
+            "max_ms": 0.210453,
+            "upstream_queries": 0,
+            "failures": []
+          },
+          "descendant_blocked": {
+            "count": 150,
+            "errors": 0,
+            "median_ms": 0.0337325,
+            "p95_ms": 0.059212,
+            "max_ms": 0.204647,
+            "upstream_queries": 0,
+            "failures": []
+          }
+        },
+        {
+          "kind": "rpz",
+          "checkconf_s": 13.648401427897625,
+          "checkconf_peak_rss_mib": 1009.546875,
+          "error": "checkconf failed: [1790801863] unbound-checkconf[11081:0] warning: rpz: create failed\n[1790801863] unbound-checkconf[11081:0] error: out of memory\n[1790801863] unbound-checkconf[11081:0] error: cannot add RR to domain\n[1790801863] unbound-checkconf[11081:0] error: /opt/unbound-filter-development/benchmark/run-full-trns2cfb/rpz.rules:1697436 cannot insert RR of type CNAME\n[1790801863] unbound-checkconf[11081:0] error: error parsing zonefile /opt/unbound-filter-development/benchmark/run-full-trns2cfb/rpz.rules for benchmark-rpz.invalid.\n[1790801863] unbound-checkconf[11081:0] fatal error: Could not setup authority zones\n"
+        }
+      ]
+    }
+  },
+  "cached_sources_on_target": {
+    "mini": "/opt/unbound-filter-development/benchmark/tif-mini.source.txt",
+    "full": "/opt/unbound-filter-development/benchmark/tif-full.source.txt"
+  },
+  "rerun": "/opt/unbound-webui/venv/bin/python probe_tif_full.py --source /opt/unbound-filter-development/benchmark/tif-full.source.txt --original-source /opt/unbound-filter-development/benchmark/unbound-filters-original.py"
+}

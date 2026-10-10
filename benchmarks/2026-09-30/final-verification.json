@@ -1,0 +1,85 @@
+{
+  "timestamp_utc": "2026-09-30T23:26:01.973799+00:00",
+  "branch": "feature/scalable-filter-subscriptions",
+  "baseline_original_python_tests_passed": 29,
+  "final_python_tests": {
+    "count": 127,
+    "passed": 127,
+    "failed": 0,
+    "seconds": 43.293
+  },
+  "javascript_tests": {
+    "count": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "import_isolation": "TEST IMPORT ISOLATION PASS",
+  "launcher_smoke": {
+    "tls_login_status": 200,
+    "secure_cookie": true,
+    "login_csrf_field": true,
+    "login_post_without_csrf": 403,
+    "unsafe_config_save": 403,
+    "process_reaped": true
+  },
+  "diff_whitespace": "passed",
+  "python_ast": "passed",
+  "static_security_pattern_findings": [],
+  "unchanged_from_task_start": [
+    "app.py",
+    "safety.py",
+    "auth.py",
+    "ssl_utils.py",
+    "container_memory.py",
+    "unbound-webui.service"
+  ],
+  "file_sha256": {
+    "BENCHMARKS.md": "b8ba951b7d5b7d9c2f58521a8b8b9d31c0f1313d10a1a0178771b64d45ed2404",
+    "DEPLOYMENT.md": "0b365415d0353f95b7e81ca5d12bbebd3d09ce2988ce8e55026260d9be3e218d",
+    "SCALABLE_FILTERS.md": "42ec9308baee04d7af10eeb18fc0ef575182fea3230819010592db938cbff3c1",
+    "filter_activation.py": "80ab2bc00a287388f036edeb59212d7bc95bc282cebca263b55097abd7398033",
+    "filter_benchmark.py": "d20ba83b716af300f93f43be8165c0a93100c6cea023da351afd9abdd2111b19",
+    "filter_recovery.py": "720b82b77cd178c09c0f411f650bca81394cee35f9ca39c56001e16c3ddbad40",
+    "filter_refresh.py": "aebb1f77c864af6ffb7316d8c749d9844a5971faea7bb079d5e626ff3b8d8c48",
+    "filter_resources.py": "b50069957004aa98844ede322812a74dd715346c1147b1e1169a672cb63516ac",
+    "filter_store.py": "545c793acd098f21bcf22f297ec401979fde617725d8f0004e6a4c1696fba212",
+    "filters.py": "ebfc3b14f38b09538a5ac02b433bdfe9dac2a05f49da5dac3698bd918f307ab4",
+    "probe_filter_backend.py": "5749f748f28dc468bae37dd7d20c20383cff29154d2654ce3d8c0ace104ba517",
+    "probe_filter_storage.py": "ccb702d6ce668a15c0a098aa5a4a89f39bab6d93971a54c4f0ae684c4728c945",
+    "probe_tif_full.py": "6533b785cfe9ead1cc20f861f258f173551d6078168277e292621b996cc98ec2",
+    "probe_tif_mini.py": "b01dff92c54daad364ddb2241da3eeedd893697ae074c511f74167c58392617f",
+    "run.py": "0e397d8a3da84110a37afaccf05d301742d427acc8c0b4777317bc0c76112049",
+    "static/js/filters.js": "56c4cdd975ee1aa4fd1bd83f527441cb1a0c7aba7b64a3cc00339fb2038e9bf7",
+    "templates/filters.html": "4cfab04296af3468cf5acaefff77f4781d4a4260e46064986562e1732aba02f2",
+    "test_filter_activation.py": "0f67980a2e38b4236e015c66766461a1a4b680e2c2428715677a9eaf040089d9",
+    "test_filter_backend_probe.py": "6f9d82c3fc74ec5e4a70e817271be65f2aadb2ffb5a68a3623433fca7a113e55",
+    "test_filter_benchmark.py": "9122dee713fd0993c79de09a28bf9cdbbcc01455ee91ad85f3355e1278159e0c",
+    "test_filter_recovery.py": "f3788a032108ad7d8c76d9a22e33bf199aac3e87b7fa6b5d616a45008f573b2b",
+    "test_filter_refresh.py": "ddefea111c1e98a26aca1d8e2364e8f227299d36eb28c483ba6b1869735cbeea",
+    "test_filter_regressions.py": "bcc56123033d5d4d4414e391fd6a45a7aaedce3f3788961d46492021a9e513d5",
+    "test_filter_resources.py": "7ac3bc92417db09d444c1251de3abad0ff12e3d7a4becfc951c5561692e473de",
+    "test_filter_semantics.py": "72b9a991b50b3ab0da2bd94bc7d87b859724188ae08dde5c417e490bd83ada71",
+    "test_filter_storage_probe.py": "496c9514e0ebcdc767cf5c56125e0884ca3c2f93d6850a00c1fa5df818bb3a7b",
+    "test_filters_scaling.py": "7f736bcc67006419972420b3bba7102a9c6053ffae84b064199b65a4b32ef38d",
+    "test_filters_ui.js": "b0f09999daa6cca536764fa5ec3ad34a789424b04aebee49b72896cc0be08aff"
+  },
+  "independent_review": {
+    "provider": "standalone Codex CLI, fresh read-only context",
+    "verdict": {
+      "passed": true,
+      "security_concerns": [],
+      "logic_errors": [],
+      "suggestions": [
+        "Defense-in-depth: make GC archive expiration directory-fsynced before deleting blobs/caches referenced only by expired archives, and validate retained archives before removing older ones."
+      ],
+      "summary": "Independent read-only review found the backup, recovery, journaling, rollback, and retained-generation interactions coherent. New and reused compressed blobs are verified before live mutation; missing-original configuration, state, and journal deletions are durably synchronized. No concrete important correctness, security, or specification gaps remain. Tests were not rerun per instruction."
+    },
+    "fix_rounds": 2
+  },
+  "cleanup": {
+    "owned_resolvers_remaining": 0,
+    "temporary_trees_removed": true,
+    "remote_input_bytes_freed": 179696283,
+    "local_hash_verified_cohort": "/home/azael/.hermes/cache/scratch/unbound-feed-cohort-2026-09-30"
+  }
+}

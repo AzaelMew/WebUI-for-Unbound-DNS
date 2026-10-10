@@ -1,0 +1,21 @@
+{
+  "commit": "03e78f7b699e5a6bcdd126342f264cc67b121e19",
+  "backup": "/root/unbound-webui-deploy-backup-20261001-050740",
+  "schema_before": 1,
+  "schema_after": 2,
+  "policy_preserved": true,
+  "config_preserved": true,
+  "unbound_pid": "5338",
+  "unbound_start": "Wed 2026-09-30 18:25:12 CEST",
+  "webui_pid": "20129",
+  "webui_memory_max": "2147483648",
+  "subscription_count": 1,
+  "enabled_subscription_count": 1,
+  "cached_domain_counts": [
+    230960
+  ],
+  "manual_blocked": 0,
+  "manual_allowed": 0,
+  "production_full_added_or_enabled": false,
+  "automatic_refresh_interval_seconds": 0
+}

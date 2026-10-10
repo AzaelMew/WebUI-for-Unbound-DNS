@@ -27,18 +27,22 @@
     <section class="card" aria-labelledby="subscriptions-heading">
         <div class="card-header"><h3 id="subscriptions-heading">HTTPS subscriptions</h3></div>
         <div class="card-body">
-            <p class="text-dim mb-2">No lists are enabled by default. Add a raw-text HTTPS URL, refresh it explicitly, then enable the cached list. Refreshing an enabled list applies its new rules. A failed or empty refresh keeps its last good cache and running DNS rules.</p>
+            <p class="text-dim mb-2">No subscriptions are enabled by default. Combine one or more public HTTPS sources using the selected feed format, refresh explicitly, then enable the cached subscription. Refreshing an enabled subscription applies its new rules. A failed or empty refresh keeps its last good cache and running DNS rules.</p>
+            <p id="filter-refresh-policy" class="text-dim mb-2">Loading automatic refresh policy…</p>
             <form id="filter-subscription-form">
                 <div class="form-row"><label for="filter-list-name" class="form-label">List name</label><input id="filter-list-name" class="form-control" required maxlength="100" autocomplete="off" placeholder="My blocklist"></div>
-                <div class="form-row"><label for="filter-list-url" class="form-label">Public HTTPS raw-list URL</label><input id="filter-list-url" type="url" class="form-control" required maxlength="2048" autocomplete="off" placeholder="https://example.org/domains.txt"></div>
+                <div class="form-row"><label for="filter-list-sources" class="form-label">Public HTTPS sources</label><textarea id="filter-list-sources" class="form-control filter-url" required rows="3" spellcheck="false" aria-describedby="filter-sources-hint" placeholder="https://example.org/domains.txt"></textarea></div>
+                <p id="filter-sources-hint" class="text-dim text-sm mb-2">One public HTTPS raw-feed URL per line. Sources are combined and duplicate domains are removed.</p>
+                <div class="form-row"><label for="filter-list-format" class="form-label">Feed format</label><select id="filter-list-format" class="form-control" required><option value="auto">Auto-detect</option><option value="domains">Plain domains</option><option value="hosts">Hosts</option><option value="adblock">Adblock (domain rules only)</option><option value="rpz">RPZ (supported blocking records only)</option></select></div>
                 <button class="btn btn-orange mt-1 mb-2" type="submit">Add disabled subscription</button>
             </form>
             <div id="filter-lists" aria-live="polite"></div>
         </div>
     </section>
     <details class="card"><summary class="card-body text-orange">Supported formats, safety limits &amp; DNS filtering limits</summary><div class="card-body text-dim">
-        <p>Supports UTF-8 plain domains, blocking hosts entries (0.0.0.0, 127.0.0.1, ::, ::1), and simple <code>||domain^</code> rules. Not a full Adblock parser: exceptions, options, regexes and cosmetic rules are reported as unsupported; use this page’s allowlist instead.</p>
-        <p class="mt-1">Limits: 20 MiB per download, 300,000 unique domains across all cached lists and manual rules, 25 subscriptions. Only public HTTPS on port 443; private destinations, credentials and unsafe redirects are refused. There is no automatic refresh schedule.</p>
+        <p>Supports UTF-8 plain domains, blocking hosts entries (0.0.0.0, 127.0.0.1, ::, ::1), simple <code>||domain^</code> Adblock rules, and RPZ QNAME NXDOMAIN (<code>CNAME .</code>) records with supported SOA/NS, origin and TTL metadata. Auto-detect examines each source; choose an explicit format when the feed is known. Unsupported domain/Adblock lines are counted with examples; malformed RPZ or unsupported RPZ actions reject the entire refresh. Use this page’s allowlist for exceptions.</p>
+        <p id="filter-limits" class="mt-1">Loading configured safety limits…</p>
+        <p class="mt-1">Only public HTTPS on port 443; private destinations, credentials and unsafe redirects are refused. Limits and the automatic refresh policy above come from the running server configuration.</p>
         <p class="mt-1">DNS filtering cannot remove same-domain ads or page elements. Clients using another resolver or custom DoH can bypass it. DNS/client caches may delay visible changes. Filters only override this manager’s rules; unrelated local DNS policies remain intact.</p>
     </div></details>
     <noscript><div class="alert alert-warning">JavaScript is required to edit filters.</div></noscript>

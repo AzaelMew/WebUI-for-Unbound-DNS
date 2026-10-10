@@ -1,0 +1,91 @@
+{
+  "source_sha256": "b8b539f0e1927ce42beb3c77566c628cb84dcb58c850c4a1aff4f73f2b0242bc",
+  "container_bytes": 4294967296,
+  "worker_cgroup": "0::/system.slice/unbound-filter-hot4g-worker.service",
+  "worker_memory_max_bytes": 2147483648,
+  "isolated_resolver_memory_max_bytes": 2147483648,
+  "cpu": 21,
+  "checks": [
+    {
+      "seconds": 0.016397287021391094,
+      "worker_headroom_before_mib": 2018.57421875,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 0.015970898908562958,
+      "worker_headroom_before_mib": 2018.3984375,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 0.016451216069981456,
+      "worker_headroom_before_mib": 2018.19921875,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 7.5720266359858215,
+      "worker_headroom_before_mib": 1839.0546875,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 7.524587347055785,
+      "worker_headroom_before_mib": 1837.08203125,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 7.531000068061985,
+      "worker_headroom_before_mib": 1716.03515625,
+      "resolver_alive": false
+    },
+    {
+      "seconds": 8.333855392993428,
+      "worker_headroom_before_mib": 1660.3984375,
+      "resolver_alive": true
+    },
+    {
+      "seconds": 7.613264449988492,
+      "worker_headroom_before_mib": 1658.34765625,
+      "resolver_alive": true
+    },
+    {
+      "seconds": 7.6465095289750025,
+      "worker_headroom_before_mib": 1647.13671875,
+      "resolver_alive": true
+    }
+  ],
+  "activations": [
+    {
+      "seconds": 6.29947948991321,
+      "resolver_pid": 19994
+    },
+    {
+      "seconds": 8.687594671966508,
+      "resolver_pid": 19994
+    }
+  ],
+  "production_before": [
+    {
+      "pid": 5338,
+      "start_ticks": 70036930,
+      "cmdline": "/usr/sbin/unbound -d -p "
+    }
+  ],
+  "minimum_container_available_mib": 1764.9150314331055,
+  "resolver_peak_rss_mib": 1003.85546875,
+  "first_disabled_refresh_s": 65.98445216601249,
+  "cold_enable_s": 64.04140310199,
+  "resolver_steady_rss_mib": 1003.63671875,
+  "live_refresh_s": 132.16154861194082,
+  "count": 2389473,
+  "enabled": true,
+  "python_peak_rss_mib": 48.62890625,
+  "passed": true,
+  "temporary_tree_removed": true,
+  "production_after": [
+    {
+      "pid": 5338,
+      "start_ticks": 70036930,
+      "cmdline": "/usr/sbin/unbound -d -p "
+    }
+  ],
+  "production_unchanged": true
+}
