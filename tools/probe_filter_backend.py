@@ -4,6 +4,9 @@ Run with the deployment venv inside the separate final-backend workspace. Every
 configuration is created below an owned TemporaryDirectory. Child AS limits are
 safety bounds, NOT an emulation of systemd MemoryMax (which counts a cgroup).
 """
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))  # repo root: filters, filter_benchmark, run
 import argparse
 import contextlib
 from datetime import datetime, timezone
@@ -177,7 +180,7 @@ def run_backend(workspace, source, url, compact_probe=False):
     result = {'timestamp_utc': datetime.now(timezone.utc).isoformat(), 'source': bench.source_info(source, url),
               'events': [], 'owned_pids': [], 'activation_verifications': [], 'affinity': sorted(os.sched_getaffinity(0)),
               'production_before': production_identity(), 'environment_before': bench.environment_info(),
-              'source_code_sha256': {n: bench.sha256_file(Path(__file__).parent / n) for n in ('filters.py', 'filter_store.py', 'safety.py', 'filter_benchmark.py', 'filter_resources.py', 'container_memory.py')},
+              'source_code_sha256': {n: bench.sha256_file(Path(__file__).resolve().parent.parent / n) for n in ('filters.py', 'filter_store.py', 'safety.py', 'filter_benchmark.py', 'filter_resources.py', 'container_memory.py')},
               'method': 'Actual FilterManager; cached Path downloader; sequential real staged main/fragment/live checks; test callback cold-starts isolated Unbound and verifies DNS',
               'limits': {'python_worker_as_mib': 512, 'validation_as_mib': 'backend preflight-selected, <=1280', 'resolver_as_mib': 1024, 'servicecap_comparison_as_mib': 512, 'minimum_memory_headroom_mib': 384, 'minimum_disk_headroom_mib': 384}}
     phase = ['initialize']

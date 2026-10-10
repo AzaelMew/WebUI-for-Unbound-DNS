@@ -133,7 +133,7 @@ class SafetyTests(unittest.TestCase):
                 self.assertEqual(resolver['cached']['upstream_queries'], 0)
 
     def test_import_has_no_process_or_backend_side_effect(self):
-        result = subprocess.run([sys.executable, '-c', 'import filter_benchmark, probe_tif_mini, probe_tif_full; assert "filters" not in __import__("sys").modules'], cwd=ROOT, capture_output=True, timeout=5)
+        result = subprocess.run([sys.executable, '-c', 'import probe_tif_mini, probe_tif_full, filter_benchmark; assert "filters" not in __import__("sys").modules'], cwd=ROOT / 'tools', capture_output=True, timeout=5)
         self.assertEqual(result.returncode, 0, result.stderr)
 
 

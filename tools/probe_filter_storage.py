@@ -5,6 +5,9 @@ actual feed's cache/rules, measuring DIFFERENT generations, not ten hardlinks.
 Only the initial empty configuration is checked; full disk measurement does not
 pretend to be ten real network refreshes or ten resolver activations.
 """
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))  # repo root: filters, filter_benchmark, run
 import argparse
 import contextlib
 import copy
@@ -38,7 +41,7 @@ def run_storage(workspace, sources, urls, format='rpz', generations=10):
     result = {'timestamp_utc': datetime.now(timezone.utc).isoformat(), 'activated': False,
               'method': 'Actual disabled multi-source refresh, then synthetic one-domain variants with real cache copies/compressed backups; no resolver activation',
               'sources': [dict(url=url, bytes=source.stat().st_size, sha256=bench.sha256_file(source)) for source, url in zip(sources, urls)],
-              'source_code_sha256': {name: bench.sha256_file(Path(__file__).parent / name) for name in ['filters.py', 'filter_store.py', 'filter_resources.py', 'filter_activation.py']},
+              'source_code_sha256': {name: bench.sha256_file(Path(__file__).resolve().parent.parent / name) for name in ['filters.py', 'filter_store.py', 'filter_resources.py', 'filter_activation.py']},
               'affinity': sorted(os.sched_getaffinity(0))}
     mapping = dict(zip(urls, sources))
     stop = threading.Event()

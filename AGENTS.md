@@ -39,7 +39,8 @@ multi-million-domain support must preserve the existing safety architecture.
 | `SERVER_CONFIG.md` | Config editor semantics, invariants, transaction and recovery. |
 | `DNS_REWRITES.md` | Rewrite editor semantics, conflicts, backup scope and offline recovery. |
 | `BENCHMARKS.md`, `benchmarks/` | Measured comparisons and raw results; distinguish historical 2 GiB runs from successful 4 GiB live-refresh tests. |
-| `filter_benchmark.py`, `probe_tif_*.py`, `probe_filter_*.py` | Guarded isolated benchmark helpers/wrappers. Not production filter toggles. |
+| `filter_benchmark.py` | Guarded isolated benchmark harness; also imported by several suites, so it stays in the root. |
+| `tools/` | `probe_tif_*.py`, `probe_filter_*.py`, legacy `verify_filter_routes.py` and the probe tests. Guarded isolated helpers, not production filter toggles. Run tests with `python -m unittest discover -s tools`. |
 
 ## Golden rules
 
@@ -194,8 +195,9 @@ cases plus 44 Node UI cases; keep import-isolation and the real TLS launcher smo
   test_container_memory test_safety test_filters test_filters_scaling \
   test_filter_recovery test_filter_activation test_filter_resources \
   test_filter_regressions test_filter_refresh test_filter_benchmark \
-  test_filter_semantics test_filter_backend_probe test_filter_storage_probe \
+  test_filter_semantics \
   test_rewrites test_rewrite_semantics test_server_config -v
+<deployment-venv>/bin/python -m unittest discover -s tools  # probe/benchmark-wrapper tests
 <deployment-venv>/bin/python test_import_isolation.py  # must print PASS
 node --test test_filters_ui.js test_rewrites_ui.js test_server_config_ui.js
 node --check static/js/filters.js
@@ -204,9 +206,9 @@ node --check static/js/server_config.js
 git diff --check
 ```
 
-`verify_filter_routes.py` is a legacy live-mutating script: do not run it on the
-deployment. Current `probe_tif_mini.py`/`probe_tif_full.py` wrap the isolated
-`filter_benchmark.py`; `probe_filter_backend.py` and `probe_filter_storage.py`
+`tools/verify_filter_routes.py` is a legacy live-mutating script: do not run it on the
+deployment. Current `tools/probe_tif_mini.py`/`tools/probe_tif_full.py` wrap the isolated
+`filter_benchmark.py`; `tools/probe_filter_backend.py` and `tools/probe_filter_storage.py`
 measure actual backend/retention behavior with controlled cached sources.
 Inspect their guards/`--help` before use, and keep workspace/output/source paths
 outside production. Never treat `TMPDIR` alone as authorization for a path.

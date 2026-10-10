@@ -1,4 +1,7 @@
 """Exercise production filter routes in a separate process, restore empty state."""
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))  # repo root: filters, filter_benchmark, run
 import subprocess
 from pathlib import Path
 import run

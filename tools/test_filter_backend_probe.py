@@ -1,4 +1,7 @@
 """Safety and real isolated backend tests; no production imports or DNS."""
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path[:0] = [str(_Path(__file__).resolve().parent.parent), str(_Path(__file__).resolve().parent)]  # repo root + tools/
 import importlib
 import json
 import os
