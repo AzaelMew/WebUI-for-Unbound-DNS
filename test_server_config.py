@@ -57,7 +57,7 @@ REWRITES = '# Managed by Unbound WebUI DNS rewrites; do not edit.\nserver:\n    
 
 DEFAULTS = {'port': '53', 'do-udp': 'yes', 'do-ip4': 'yes', 'do-ip6': 'yes', 'do-tcp': 'yes', 'cache-min-ttl': '0',
             'cache-max-ttl': '86400', 'msg-cache-size': '4m', 'rrset-cache-size': '4m', 'neg-cache-size': '1m',
-            'num-threads': '1', 'verbosity': '1', 'hide-identity': 'no', 'tls-cert-bundle': '', 'logfile': ''}
+            'num-threads': '1', 'outgoing-range': '4096', 'verbosity': '1', 'hide-identity': 'no', 'tls-cert-bundle': '', 'logfile': ''}
 SIZES = {'k': 1 << 10, 'm': 1 << 20, 'g': 1 << 30}
 
 
@@ -114,7 +114,10 @@ class FakeUnbound:
     def running(self, config, key):
         if self.control_down:
             raise RuntimeError('connection refused')
-        return self._read(self.loaded, key)
+        value = self._read(self.loaded, key)
+        if key == 'outgoing-range':  # Unbound clamps this to the open-file limit.
+            value = [str(min(int(value[0] or 4096), 2029))]
+        return value
 
     @staticmethod
     def _read(eff, key):
@@ -251,6 +254,27 @@ class ParserTests(unittest.TestCase):
         state = env.mgr.snapshot()
         self.assertFalse(state['running_available'])
         self.assertEqual(state['pending'], [])
+
+
+class RuntimeClampTests(unittest.TestCase):
+    def test_outgoing_range_lowered_by_unbound_is_not_pending(self):
+        env = Env(self)
+        state = env.mgr.snapshot()
+        info = state['values']['outgoing-range']
+        self.assertEqual((info['pending'], info['reduced'], info['running']), (False, True, 2029))
+        self.assertNotIn('outgoing-range', state['pending'])
+        # Saving and applying it verifies against the clamped running value instead of rolling back.
+        result = env.save(changes={'outgoing-range': 8192})
+        self.assertTrue(result['applied'])
+        self.assertEqual(result['state']['pending'], [])
+        self.assertEqual(result['state']['values']['outgoing-range']['running'], 2029)
+
+    def test_running_value_above_or_unrelated_to_the_file_is_still_pending(self):
+        env = Env(self)
+        env.srv.write_text(env.srv.read_text() + '  outgoing-range: 512\n')
+        self.assertIn('outgoing-range', env.mgr.snapshot()['pending'])   # running 2029 > configured 512
+        env.srv.write_text(env.srv.read_text().replace('cache-min-ttl: 300', 'cache-min-ttl: 60'))
+        self.assertIn('cache-min-ttl', env.mgr.snapshot()['pending'])     # exact-match options never clamp
 
 
 class PlanningTests(unittest.TestCase):

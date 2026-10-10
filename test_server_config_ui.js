@@ -150,6 +150,15 @@ test('renders every section from the server schema with sources and a sync badge
     assert.match(ui.get('cfg-files').textContent, /webui-filters\.conf.*Generated; edit on the Filters/s);
 });
 
+test('a value Unbound lowered itself is explained, not flagged as pending', async () => {
+    const state = snapshot();
+    state.values['cache-min-ttl'] = value(300, {running: 120, reduced: true});
+    const ui = await harness(state);
+    assert.match(ui.get('cfg-row-cache-min-ttl').textContent, /running: 120 \(Unbound lowered it to fit a system limit\)/);
+    assert.equal(ui.get('cfg-pending').hidden, true);
+    assert.equal(ui.get('cfg-badge').textContent, 'In sync with running');
+});
+
 test('single non-disruptive change applies without confirmation using a revisioned CSRF request', async () => {
     const ui = await harness();
     type(ui.get('cfg-in-cache-min-ttl'), '60');
