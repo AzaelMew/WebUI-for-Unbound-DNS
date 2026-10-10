@@ -36,7 +36,14 @@ def read_profile(path):
     return tokens[0] if tokens else None, blocked
 
 
-def stamp_policy(path):
+def _probe_name(value):
+    if not isinstance(value, str) or not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\._webui\.invalid', value):
+        raise ValueError('Use a reserved managed-policy probe name')
+    return value
+
+
+def stamp_policy(path, probe_name=PROBE_NAME):
+    probe_name = _probe_name(probe_name)
     path = Path(path)
     previous, blocked = read_profile(path)
     if previous is not None:
@@ -48,8 +55,8 @@ def stamp_policy(path):
     token = digest.hexdigest()
     with path.open('a', encoding='ascii') as output:
         output.write(TOKEN_PREFIX + token + '\n')
-        output.write(f'    local-zone: "{PROBE_NAME}." static\n')
-        output.write(f'    local-data: \'{PROBE_NAME}. IN TXT "{token}"\'\n')
+        output.write(f'    local-zone: "{probe_name}." static\n')
+        output.write(f'    local-data: \'{probe_name}. IN TXT "{token}"\'\n')
         output.flush()
         os.fsync(output.fileno())
     return token, blocked
@@ -82,7 +89,8 @@ def _answer(packet, identifier, question):
     offset = _name_end(packet, 12) + 4
     if packet[12:offset] != question:
         raise ValueError('DNS verification question mismatch')
-    texts = []
+    requested_kind = struct.unpack('!H', question[-4:-2])[0]
+    values = []
     for _ in range(answers):
         offset = _name_end(packet, offset)
         if offset + 10 > len(packet):
@@ -91,7 +99,12 @@ def _answer(packet, identifier, question):
         start, end = offset + 10, offset + 10 + size
         if end > len(packet):
             raise ValueError('Truncated DNS data')
-        if kind == 16 and cls == 1:
+        if kind == requested_kind and cls == 1 and kind in {1, 28}:
+            expected_size = 4 if kind == 1 else 16
+            if size != expected_size:
+                raise ValueError('Invalid DNS address data length')
+            values.append(str(ipaddress.ip_address(packet[start:end])))
+        elif kind == requested_kind == 16 and cls == 1:
             value = bytearray()
             while start < end:
                 length = packet[start]
@@ -100,9 +113,9 @@ def _answer(packet, identifier, question):
                     raise ValueError('Truncated TXT value')
                 value.extend(packet[start:start + length])
                 start += length
-            texts.append(value.decode('ascii'))
+            values.append(value.decode('ascii'))
         offset = end
-    return flags & 15, texts
+    return flags & 15, values
 
 
 def query(host, port, name, kind, timeout):
@@ -111,7 +124,10 @@ def query(host, port, name, kind, timeout):
         raise ValueError('Invalid DNS verification name')
     question = b''.join(bytes([len(label)]) + label for label in labels) + b'\0' + struct.pack('!HH', kind, 1)
     identifier = secrets.randbelow(65536)
-    request = struct.pack('!HHHHHH', identifier, 0x0100, 1, 0, 0, 0) + question
+    # Advertise the bounded receive size so long names/multiple AAAA answers do
+    # not truncate at the legacy 512-byte UDP limit.
+    opt = b'\0' + struct.pack('!HHIH', 41, 4096, 0, 0)
+    request = struct.pack('!HHHHHH', identifier, 0x0100, 1, 0, 0, 1) + question + opt
     family = socket.AF_INET6 if ipaddress.ip_address(host).version == 6 else socket.AF_INET
     with socket.socket(family, socket.SOCK_DGRAM) as sock:
         sock.settimeout(timeout)
@@ -121,7 +137,8 @@ def query(host, port, name, kind, timeout):
     return _answer(packet, identifier, question)
 
 
-def verify_policy(token, blocked_domain=None, host=None, port=None, timeout=None):
+def verify_policy(token, blocked_domain=None, host=None, port=None, timeout=None, probe_name=PROBE_NAME):
+    probe_name = _probe_name(probe_name)
     host = host if host is not None else os.environ.get('WEBUI_FILTER_VERIFY_HOST', '127.0.0.1')
     port = int(port if port is not None else os.environ.get('WEBUI_FILTER_VERIFY_PORT', '53'))
     timeout = float(timeout if timeout is not None else os.environ.get('WEBUI_FILTER_VERIFY_TIMEOUT', '10'))
@@ -134,7 +151,7 @@ def verify_policy(token, blocked_domain=None, host=None, port=None, timeout=None
     reason = 'No DNS response'
     while time.monotonic() < deadline:
         try:
-            rcode, texts = query(host, port, PROBE_NAME, 16, min(.5, deadline - time.monotonic()))
+            rcode, texts = query(host, port, probe_name, 16, min(.5, deadline - time.monotonic()))
             loaded = (rcode in {0, 3} and not texts) if token is None else (rcode == 0 and texts == [token])
             if not loaded:
                 raise ValueError('DNS serves a different managed policy token')

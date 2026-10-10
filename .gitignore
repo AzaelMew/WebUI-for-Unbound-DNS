@@ -7,3 +7,12 @@ ssl_key.pem
 backups/
 *.bak.*
 __pycache__/
+.env
+.configured
+filter-data/
+filter-backups/
+rewrite-data/
+rewrite-backups/
+testdata/
+config-data/
+config-backups/

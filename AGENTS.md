@@ -29,11 +29,15 @@ multi-million-domain support must preserve the existing safety architecture.
 | `filter_activation.py` | Bounded wire-DNS verification of the loaded fragment's reserved TXT canary and representative blocked query. |
 | `filter_refresh.py` | Global opt-in scheduler; starts/stops through application lifecycle, refreshes enabled lists serially. |
 | `filter_recovery.py` | Explicit offline validation/restore of managed fragment/state. Never activates DNS automatically. |
+| `rewrites.py`, `rewrites_recovery.py` | Dedicated A/AAAA rewrite API, revisioned drafts, own managed fragment/transactions and explicit offline recovery. Never modify filter policy or unmanaged overrides implicitly. |
+| `server_config.py` | Config page backend: schema-driven, line-preserving edits of the real config files, same transactional/rollback contract, raw editor, offline recovery CLI. Replaces upstream `/config`. |
 | `container_memory.py` | Reports container cgroup working-set memory instead of host `/proc/meminfo` (LXC hides the parent limit; override via `WEBUI_CONTAINER_MEMORY_BYTES`). |
 | `templates/`, `static/` | Jinja/assets; fork-owned filter page/JS and responsive CSS. Keep remote values in safe DOM text/value APIs. |
 | `unbound-webui.service` | Reference systemd unit for the deployed service. |
 | `DEPLOYMENT.md` | Operator-facing install/maintenance notes for the live deployment. |
 | `SCALABLE_FILTERS.md` | Exact schema, formats, configurable bounds, transaction/backup/recovery contract. |
+| `SERVER_CONFIG.md` | Config editor semantics, invariants, transaction and recovery. |
+| `DNS_REWRITES.md` | Rewrite editor semantics, conflicts, backup scope and offline recovery. |
 | `BENCHMARKS.md`, `benchmarks/` | Measured comparisons and raw results; distinguish historical 2 GiB runs from successful 4 GiB live-refresh tests. |
 | `filter_benchmark.py`, `probe_tif_*.py`, `probe_filter_*.py` | Guarded isolated benchmark helpers/wrappers. Not production filter toggles. |
 
@@ -107,6 +111,44 @@ multi-million-domain support must preserve the existing safety architecture.
   lifecycle hooks, same-list exclusion, bounded operations and failed-attempt
   metadata. Test hooks with a real FastAPI/TestClient lifespan, not only fake apps.
 
+## DNS rewrite invariants
+
+- Manage only `webui-rewrites.conf` plus private `rewrite-data`/`rewrite-backups`;
+  disabled drafts must not activate DNS. Apply enabled changes once per batch,
+  with strict hostname/IP/TTL validation and optimistic revision conflict checks.
+- Permit private IPs as A/AAAA RDATA without relaxing subscription download SSRF
+  checks. Reject IPv6 scope IDs, URLs/wildcards, duplicate hosts and invalid TTLs.
+- Use an independent reserved rewrite canary alongside the filter canary; verify
+  actual A/AAAA answers and missing-family NoData. Keep UDP verification bounded
+  while advertising EDNS space for long names/multiple IPv6 addresses.
+- Do not silently adopt/delete existing local-data or modify the filter allowlist.
+  Exact managed NXDOMAIN conflicts require explicit allowlisting; unmanaged
+  overrides require explicit migration. Other config/filter bytes stay intact.
+- Rewrite backups omit the giant generated filter fragment, recording its hash
+  as context. Recovery restores only the small rewrite policy/state and requires
+  the stopped WebUI; never claim it restores the complete filter backup set.
+- Keep operator-provided mappings out of source/tests. If importing requested
+  mappings during rollout, store them as private disabled drafts unless activation
+  has been explicitly authorized. Initialize an empty fragment only as an approved
+  deployment operation, never during module import or route installation.
+
+## Server config invariants
+
+- The config files are the only state: never add a shadow state file or rebuild
+  `unbound.conf` from a key list (that is the upstream bug). Edit the defining line
+  in place; keep comments, includes, repeated directives, remote-control and every
+  unknown directive byte-identical. Never parse/edit `webui-*.conf` here.
+- Read effective/running values through light trees (generated fragments emptied):
+  `unbound-control`/`checkconf` against the real tree load ~134 MB of local-zones
+  (~1.7 s and ~1 GiB per call). Only full-tree validation uses the real fragments.
+- Every new schema key must exist in the installed Unbound
+  (`RealToolTests.test_every_schema_key_is_known_to_the_installed_unbound`).
+- Keep the lock-out invariants (loopback access/interface/UDP) and the
+  acknowledgement requirement for disruptive applies; verify after reload against the
+  candidate, not just `systemctl is-active`.
+- Tests use a fake Unbound reading the temp tree; never point the manager at
+  `/etc/unbound` except for read-only snapshots (`snapshot()` only reads).
+
 ## Capacity and benchmark gates
 
 The documented target is now **4 GiB RAM**, with a **2 GiB WebUI/validator service
@@ -144,18 +186,21 @@ host; do not bake operator resources/addresses into generic source.
 
 Tests require the deployment venv (FastAPI/Pydantic v2/httpx) and target Unbound
 tools. Run from a separate development copy on that host, **not** the live
-`/opt/unbound-webui` directory. The verified full suite is 127 Python cases plus
-12 Node UI cases; keep import-isolation and the real TLS launcher smoke green.
+`/opt/unbound-webui` directory. The integrated rewrite/filter/config suite is 199 Python
+cases plus 44 Node UI cases; keep import-isolation and the real TLS launcher smoke green.
 
 ```bash
 <deployment-venv>/bin/python -m unittest \
   test_container_memory test_safety test_filters test_filters_scaling \
   test_filter_recovery test_filter_activation test_filter_resources \
   test_filter_regressions test_filter_refresh test_filter_benchmark \
-  test_filter_semantics test_filter_backend_probe test_filter_storage_probe -v
+  test_filter_semantics test_filter_backend_probe test_filter_storage_probe \
+  test_rewrites test_rewrite_semantics test_server_config -v
 <deployment-venv>/bin/python test_import_isolation.py  # must print PASS
-node --test test_filters_ui.js
+node --test test_filters_ui.js test_rewrites_ui.js test_server_config_ui.js
 node --check static/js/filters.js
+node --check static/js/rewrites.js
+node --check static/js/server_config.js
 git diff --check
 ```
 

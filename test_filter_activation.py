@@ -76,6 +76,42 @@ class ActivationTests(unittest.TestCase):
                 self.assertEqual(answer['rcode'], 0, name)
                 self.assertEqual(answer['answers'], ['192.0.2.123'], name)
 
+    def test_independent_managed_canaries_and_decoded_ipv4_ipv6_answers(self):
+        first = self.fragment()
+        first_token, blocked = filter_activation.stamp_policy(first)
+        second = self.root / 'rewrites.conf'
+        second.write_text(filters.HEADER + '    local-zone: "rewrite.example." transparent\n'
+            '    local-data: "rewrite.example. IN A 192.0.2.4"\n'
+            '    local-data: "rewrite.example. IN AAAA 2001:db8::4"\n')
+        probe = 'rewrite-policy-check._webui.invalid'
+        second_token, _ = filter_activation.stamp_policy(second, probe_name=probe)
+        combined = self.root / 'combined.conf'
+        combined.write_text(first.read_text() + second.read_text())
+        with bench.mock_upstream() as upstream, bench.isolated_resolver(self.root, 'localzone', combined, upstream.port) as resolver:
+            filter_activation.verify_policy(first_token, blocked, port=resolver['port'], timeout=2)
+            filter_activation.verify_policy(second_token, port=resolver['port'], timeout=2, probe_name=probe)
+            self.assertEqual(filter_activation.query('127.0.0.1', resolver['port'], 'rewrite.example', 1, 1), (0, ['192.0.2.4']))
+            self.assertEqual(filter_activation.query('127.0.0.1', resolver['port'], 'rewrite.example', 28, 1), (0, ['2001:db8::4']))
+
+    def test_many_ipv6_rewrite_answers_use_bounded_edns_not_truncated_udp(self):
+        path = self.root / 'many.conf'
+        name = 'a' * 63 + '.' + 'b' * 63 + '.example'
+        addresses = [f'2001:db8::{number:x}' for number in range(1, 17)]
+        path.write_text(filters.HEADER + f'    local-zone: "{name}." transparent\n' +
+                        ''.join(f'    local-data: "{name}. IN AAAA {address}"\n' for address in addresses))
+        with bench.mock_upstream() as upstream, bench.isolated_resolver(self.root, 'localzone', path, upstream.port) as resolver:
+            code, answers = filter_activation.query('127.0.0.1', resolver['port'], name, 28, 1)
+            self.assertEqual(code, 0)
+            self.assertEqual(set(answers), set(addresses))
+
+    def test_managed_canary_name_is_reserved_and_cannot_inject_configuration(self):
+        path = self.fragment()
+        before = path.read_bytes()
+        for name in ['example.com', '*.invalid', 'bad"\nserver:', '-bad._webui.invalid']:
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                filter_activation.stamp_policy(path, probe_name=name)
+            self.assertEqual(path.read_bytes(), before)
+
 
 if __name__ == '__main__':
     unittest.main()

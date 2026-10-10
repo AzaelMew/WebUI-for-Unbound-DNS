@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="config-page">
+    <div class="page-header"><h1>Configuration</h1><span class="badge badge-gray" id="cfg-badge">Loading</span></div>
+    <p class="text-dim mb-2">Unbound server settings. Edits patch only the lines that define each option, so comments, includes, repeated directives and the remote-control block stay intact. Every change is validated on a staged copy, backed up, applied atomically and, when you apply it, verified against the running resolver; any failure restores the previous files. Filter and DNS rewrite policy live on their own pages.</p>
+    <div id="cfg-notice" class="alert alert-info" role="status" aria-live="polite">Loading configuration…</div>
+    <div id="cfg-pending" class="alert alert-warning" role="status" hidden>
+        <span id="cfg-pending-text"></span>
+        <button id="cfg-apply-pending" class="btn btn-orange" type="button">Reload Unbound to apply</button>
+    </div>
+    <p id="cfg-meta" class="text-dim text-sm mb-2">Loading state…</p>
+    <div class="tab-nav" id="cfg-tabs" role="tablist" aria-label="Configuration sections"></div>
+    <div id="cfg-panels"></div>
+    <div class="cfg-bar" id="cfg-bar" role="region" aria-label="Pending changes">
+        <div id="cfg-summary" class="cfg-summary" aria-live="polite">No unsaved changes.</div>
+        <div class="btn-group cfg-actions">
+            <button id="cfg-discard" class="btn btn-ghost" type="button" disabled>Discard changes</button>
+            <button id="cfg-save" class="btn btn-ghost" type="button" disabled>Validate &amp; save (no reload)</button>
+            <button id="cfg-apply" class="btn btn-orange" type="button" disabled>Save &amp; apply</button>
+        </div>
+    </div>
+    <noscript><div class="alert alert-warning">JavaScript is required to edit the configuration.</div></noscript>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/server_config.js') }}" defer></script>{% endblock %}

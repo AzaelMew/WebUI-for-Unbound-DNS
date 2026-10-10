@@ -17,9 +17,9 @@ Pinned source commit: 233433be9565eba67d88d78401c44d917a33e5cd
 
 `run.py` launches upstream through `safety.py`. It fails closed if TLS initialization fails; session cookies require HTTPS. Login requires CSRF and limits attempts. Configuration metadata uses Jinja's tojson serialization. Leading command options are rejected for diagnostic targets.
 
-Upstream form save/apply rebuilds config lossily, so these endpoints are disabled. Config creation/deletion, GUI include/tab rewrites, Unbound certificate deletion/regeneration, TLS regeneration, reboot and network restart are also disabled. The Configuration page explicitly displays this limitation.
+Upstream form save/apply rebuilds config lossily, so these endpoints stay disabled. Config creation/deletion, GUI include/tab rewrites, Unbound certificate deletion/regeneration, TLS regeneration, reboot and network restart are also disabled. The Config page (`/config`) is now served by `server_config.py`, a transactional line-preserving editor; see `SERVER_CONFIG.md`.
 
-Use Configuration -> select an existing file -> Raw Editor. Raw saves preserve the text, stage a copy of the complete Unbound tree, relocate include references in the staged tree, validate both staged main and selected file, require a full-tree backup, atomically replace preserving ownership/mode, validate again, and roll back on failure. Raw save does not activate: use Settings -> Reload after saving. Restore of a single `.conf` backup uses the same validated path and rolls back on activation failure.
+The Config page's **Files & raw editor** tab is the raw path (the old per-session file selector and Settings -> Reload workflow are replaced by Save & apply with verification). Raw saves preserve the text, stage a copy of the complete Unbound tree, relocate include references in the staged tree, validate both staged main and selected file, require a full-tree backup, atomically replace preserving ownership/mode, validate again, and roll back on failure. Raw save does not activate: use Settings -> Reload after saving. Restore of a single `.conf` backup uses the same validated path and rolls back on activation failure.
 
 The GUI's original backup create/download buttons operate on the selected single file, not the complete config tree. Transaction backups are separate `backups/full_config_*.tgz` files. These full-tree archives are not restored via the single-file GUI uploader.
 
@@ -32,7 +32,7 @@ The GUI's original backup create/download buttons operate on the selected single
 - Formats: UTF-8 plain domains, blocking hosts, simple `||domain^`, and strict RPZ QNAME NXDOMAIN input (including split HaGeZi feeds). Multiple sources belong to one logical subscription. Defaults: 96 MiB per source, 192 MiB aggregate per refresh, 3M unique cached domains aggregate including disabled lists, 25 subscriptions, 8 sources per subscription. Public HTTPS/443, DNS pinning and redirect protections remain.
 - Schema-v2 `filter-data/state.json` contains metadata/manual rules; immutable SQLite subscription caches live in `filter-data/cache/`. Valid v1 state migrates with a retained exact backup and no DNS activation. The ten retained filter archives require their shared gzip blobs and referenced caches; a `.tgz` alone is not a complete restore. Failed refresh/activation preserves last-known-good rules/cache; uncertain publication retains a recovery journal and fails closed.
 - See [SCALABLE_FILTERS.md](SCALABLE_FILTERS.md) for all settings, transaction/resource limits and validated offline backup/journal recovery. [BENCHMARKS.md](BENCHMARKS.md) records the actual Full/Mini measurements. The original 2 GiB/512 MiB service budget could not support safe Full updates. The container is now 4 GiB and the WebUI cap is 2 GiB; an isolated live Full refresh/reload passed with at least 1.72 GiB available. Full remains disabled in production; existing rules were preserved.
-- Run suites from a separate development copy using the deployment's venv, not from the live app directory. See `AGENTS.md` for the complete 127-case Python/12-case Node commands. `verify_filter_routes.py` is legacy/live-mutating; current TIF probes are guarded isolated wrappers and must use development paths/high ports.
+- Run suites from a separate development copy using the deployment's venv, not from the live app directory. See `AGENTS.md` for the integrated 155-case Python/27-case Node rewrite/filter commands. `verify_filter_routes.py` is legacy/live-mutating; current TIF probes are guarded isolated wrappers and must use development paths/high ports.
 - Integration testing exposed an unsafe app import order in the old tests. Original main config was restored from backup, all original checksums verified, and DNS/exporters recovered. Unbound and exporters restarted during recovery; cache counters restarted. Tests now load a fresh module and assert temporary paths before any write.
 
 ## Backup and maintenance
@@ -60,8 +60,11 @@ Do not blindly overwrite this tree on upgrade. Re-audit upstream config serializ
    permissions. Preserve users/secrets/certificates, `.env`, `.configured`, other
    backups and systemd/firewall drop-ins; do not copy test state or credential files.
 3. Copy `filters.py`, `filter_store.py`, `filter_resources.py`,
-   `filter_activation.py`, `filter_refresh.py`, `filter_recovery.py`, `run.py`,
-   `static/js/filters.js` and `templates/filters.html` from the feature revision.
+   `filter_activation.py`, `filter_refresh.py`, `filter_recovery.py`, `rewrites.py`,
+   `rewrites_recovery.py`, `server_config.py`, `run.py`, `static/js/filters.js`,
+   `static/js/rewrites.js`, `static/js/server_config.js`, `templates/filters.html`,
+   `templates/rewrites.html`, `templates/server_config.html`, `templates/base.html` and
+   `static/css/responsive.css` from the feature revision.
    `app.py`, `safety.py`, existing authentication/TLS helpers and other Unbound
    config remain unchanged. No additional Python package is required.
 4. Set optional filter limits in the WebUI systemd drop-in. Leave automatic
@@ -114,3 +117,33 @@ high loopback ports; production resolver PID/start identity remained unchanged.
   resolver and WebUI services; they were removed after successful testing. See
   `benchmarks/2026-10-01/` for results. Full activation/reload can delay DNS answers
   briefly; measured readiness after the isolated reload was about8.7 seconds.
+
+## Config page rollout
+
+`server_config.py` creates only its private `config-data/` and `config-backups/`
+(mode 0700) under the application directory when the launcher starts; it never
+writes `/etc/unbound` until a user saves. No initialisation step, new package or
+drop-in is needed. After copying the files above, verify read-only: `GET /config` and
+`/api/server-config` redirect (307) without a session, and with the deployment venv
+`ConfigManager('/tmp/<scratch>', '/etc/unbound/unbound.conf').snapshot()` reports
+`editable: True`, `pending: []` and the expected sources (it only reads; use a scratch
+`base` outside `/etc/unbound`). Do not exercise saves against the live tree. Config
+verification waits up to `WEBUI_CONFIG_VERIFY_TIMEOUT` seconds (default 30, max 60)
+for the reload; a full local-zone reload measured about 9 s.
+
+## DNS rewrites page rollout
+
+The dedicated `/rewrites` page manages A/AAAA records through its own protected
+API/transaction, not the upstream lossy configuration form. See
+`DNS_REWRITES.md` for editing, draft imports, batch apply, conflicts and recovery.
+Deploy its modules/assets and launcher hook together. After an approved upgrade,
+explicitly call `RewriteManager.initialize_empty()` for the included
+`webui-rewrites.conf` when no enabled rewrite policy exists; it validates/creates
+an empty fragment without a DNS reload. Constructor/route installation does not
+silently create policy or activate mappings. Operator-requested maps may be loaded
+as private disabled drafts, never hardcoded in source or auto-enabled by rollout.
+
+Preserve existing filter state and config bytes. The small rewrite backups omit
+the generated filter fragment and restore only rewrite state/config. Verify the
+real launcher/new protected routes, canonical backup/recovery agreement and
+independent canaries before rollout. Do not clear a rewrite journal manually.

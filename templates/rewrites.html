@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="rewrite-page">
+    <div class="page-header"><h1>DNS rewrites</h1><span class="badge badge-orange" id="rewrite-count">Loading</span></div>
+    <p class="text-dim mb-2">Local DNS answers for clients using this resolver. Rewrites do not change public DNS, routing or port forwarding. Enabled changes validate and apply together; a full DNS reload may delay queries. Client caches may retain older answers until their TTL expires.</p>
+    <div id="rewrite-notice" class="alert alert-info" role="status" aria-live="polite">Loading saved rewrites…</div>
+    <p id="rewrite-state" class="text-dim text-sm mb-2">Loading managed state…</p>
+    <p id="rewrite-limits" class="text-dim text-sm mb-2">Loading safety limits…</p>
+    <div class="grid-2">
+    <section class="card" aria-labelledby="rewrite-editor-heading">
+        <div class="card-header"><h3 id="rewrite-editor-heading">Add rewrite</h3></div>
+        <form id="rewrite-form" class="card-body">
+            <div class="form-row"><label for="rewrite-hostname" class="form-label">Hostname</label><input id="rewrite-hostname" class="form-control" required maxlength="253" autocomplete="off" spellcheck="false" aria-describedby="rewrite-hostname-hint"></div>
+            <p id="rewrite-hostname-hint" class="text-dim text-sm mb-2">Exact fully qualified hostname only, not a URL, wildcard or IP address. International names are supported.</p>
+            <div class="form-row"><label for="rewrite-addresses" class="form-label">IPv4 / IPv6 addresses</label><textarea id="rewrite-addresses" class="form-control text-mono" required rows="3" spellcheck="false" aria-describedby="rewrite-address-hint"></textarea></div>
+            <p id="rewrite-address-hint" class="text-dim text-sm mb-2">One address per line or comma-separated. All addresses are returned for this hostname, with A / AAAA types derived automatically.</p>
+            <div class="form-row"><label for="rewrite-ttl" class="form-label">TTL (seconds)</label><input id="rewrite-ttl" class="form-control" type="number" value="300" min="1" max="86400" step="1" required></div>
+            <div class="rewrite-checkbox mt-1 mb-2"><input id="rewrite-enabled" type="checkbox"><label for="rewrite-enabled">Enabled — save and apply to DNS immediately</label></div>
+            <p id="rewrite-editor-hint" class="text-dim text-sm mb-2">Disabled records are saved drafts and do not change DNS.</p>
+            <div class="btn-group rewrite-actions"><button id="rewrite-save" class="btn btn-orange" type="submit">Save draft</button><button id="rewrite-cancel" class="btn btn-ghost" type="button">Clear form</button></div>
+        </form>
+    </section>
+    <section class="card" aria-labelledby="rewrite-bulk-heading">
+        <div class="card-header"><h3 id="rewrite-bulk-heading">Bulk import</h3></div>
+        <form id="rewrite-bulk-form" class="card-body">
+            <label for="rewrite-bulk-input" class="form-label">Hostnames and IP addresses</label>
+            <textarea id="rewrite-bulk-input" class="form-control text-mono mt-1" rows="7" spellcheck="false" aria-describedby="rewrite-bulk-hint"></textarea>
+            <p id="rewrite-bulk-hint" class="text-dim text-sm mt-1 mb-2">Use one “hostname IP” per line, or alternate a hostname line and an IP line. Multiple addresses may be comma-separated. Imports merge with saved records; matching hostnames replace only that record after confirmation. Duplicate hostnames in a paste are rejected.</p>
+            <div class="form-row"><label for="rewrite-bulk-ttl" class="form-label">Imported TTL (seconds)</label><input id="rewrite-bulk-ttl" class="form-control" type="number" value="300" min="1" max="86400" step="1" required></div>
+            <div class="rewrite-checkbox mt-1 mb-2"><input id="rewrite-bulk-disabled" type="checkbox" checked><label for="rewrite-bulk-disabled">Import as disabled drafts (no DNS reload for new drafts)</label></div>
+            <div class="btn-group rewrite-actions"><button id="rewrite-preview" class="btn btn-ghost" type="button">Preview import</button><button id="rewrite-import" class="btn btn-orange" type="submit" disabled>Import drafts</button></div>
+            <div id="rewrite-preview-result" class="mt-2" role="status" aria-live="polite">Preview and validate your paste before importing.</div>
+        </form>
+    </section>
+    </div>
+    <section class="card" aria-labelledby="rewrite-saved-heading">
+        <div class="card-header"><h3 id="rewrite-saved-heading">Saved rewrites</h3><button id="rewrite-refresh" class="btn btn-ghost" type="button">Refresh saved state</button></div>
+        <div class="card-body">
+            <p class="text-dim mb-2">Enable all saved drafts in one transaction to avoid a reload per record. This does not save the editor or unimported paste.</p>
+            <div class="btn-group rewrite-actions mb-2"><button id="rewrite-enable-all" class="btn btn-orange" type="button" disabled>Enable all drafts &amp; apply once</button><button id="rewrite-disable-all" class="btn btn-ghost" type="button" disabled>Disable all &amp; apply once</button></div>
+            <div id="rewrite-records" aria-live="polite"></div>
+        </div>
+    </section>
+    <noscript><div class="alert alert-warning">JavaScript is required to manage DNS rewrites.</div></noscript>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/rewrites.js') }}" defer></script>{% endblock %}

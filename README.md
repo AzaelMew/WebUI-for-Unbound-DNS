@@ -18,11 +18,18 @@ container-aware memory reporting and responsive UI improvements.
   and one-time administrator setup. Upstream default credentials are invalidated
   before the listener starts.
 - **Protected configuration editing:** unsafe/lossy upstream form-save endpoints
-  are disabled. The Raw Editor validates a staged complete config tree, backs up
-  the original and writes atomically. Raw saves do not activate automatically.
+  are disabled. The Config page edits only the lines that define each option
+  (comments, includes and unknown directives stay intact), validates a staged
+  complete config tree, backs up the original, writes atomically, and on *Save &
+  apply* reloads Unbound and verifies the running values and DNS, rolling back on
+  any failure. It shows where each value is set and which saved options Unbound has
+  not loaded yet. A raw per-file editor uses the same pipeline. See `SERVER_CONFIG.md`.
 - **Native Unbound filtering:** manual blocks and allowlist subtrees, with
   allowlist exceptions winning over every managed list. Rules live only in
   `unbound.conf.d/webui-filters.conf`; unrelated resolver configuration is preserved.
+- **DNS rewrites editor:** manage exact hostname → IPv4/IPv6 answers and TTL from
+  the WebUI, with add/edit/delete, disabled drafts, bulk preview/import and one
+  validated apply for a batch. No Raw Editor or unsafe upstream save is needed.
 - **Scalable subscriptions:** metadata-only state, immutable SQLite caches,
   streamed downloads/parsing and disk-backed deduplication/unions instead of
   millions of strings embedded in `state.json`.
@@ -50,6 +57,8 @@ or query-log interface.
 |---|---|
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Installation/upgrade, live deployment, preserving listeners/auth/state and operator maintenance |
 | [SCALABLE_FILTERS.md](SCALABLE_FILTERS.md) | State schema/migration, supported syntax, all settings, transactions, backup set and offline recovery |
+| [SERVER_CONFIG.md](SERVER_CONFIG.md) | Config page: line-preserving edits, pending-vs-running view, transaction/verification, lock-out invariants and offline recovery |
+| [DNS_REWRITES.md](DNS_REWRITES.md) | Direct A/AAAA editing, drafts, bulk import, conflict handling and offline rewrite recovery |
 | [BENCHMARKS.md](BENCHMARKS.md) | Actual Mini/Full and native-RPZ comparisons, importer/resolver memory, latency and 4 GiB live-refresh results |
 | [AGENTS.md](AGENTS.md) | Contributor/agent safety rules, module ownership, isolated testing and deployment boundaries |
 
@@ -181,6 +190,12 @@ another resolver's capacity or that every 4 GiB workload will fit.
 
 ## Backups and recovery
 
+Config-page saves keep the ten most recent verified backups of the previous file
+bytes in `config-backups/`, with a recovery journal in `config-data/` while a
+transaction runs. If one is interrupted the page turns read-only; stop the WebUI and
+use `server_config.py` (dry run by default, never reloads DNS) as described in
+[SERVER_CONFIG.md](SERVER_CONFIG.md).
+
 Filter state is schema-v2 metadata plus immutable cache generations under
 `filter-data/`. Valid v1 state migrates with an exact original backup and no DNS
 activation. Metadata-only saves and activated transactions preserve recoverable
@@ -201,8 +216,9 @@ reset state, or automatically restart production DNS to bypass recovery.
 
 Use the deployment's venv from a **separate development copy**, with temporary
 config/filter trees and asserted path isolation. Never run tests/probes against
-production filter state. The verified suite contains 127 Python cases plus 12
-Node UI cases; the import-isolation guard and real TLS launcher smoke also passed.
+production filter state. The integrated rewrite/filter/config suite contains 199 Python
+cases plus 44 Node UI cases; the import-isolation guard passed. Launcher and live
+deployment checks must also pass before rollout.
 The known Starlette/httpx deprecation warning does not represent a failed test.
 
 See [AGENTS.md](AGENTS.md) for the full test commands and probe boundaries.
